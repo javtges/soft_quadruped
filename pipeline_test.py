@@ -6,6 +6,8 @@ import yaml
 import time
 import readchar
 import struct
+import csv
+from datetime import datetime
 from pupil_apriltags import Detector
 
 at_detector = Detector(families='tag36h11',
@@ -56,10 +58,18 @@ tag_xyz_data= []
 p_count = 16
 params = np.ones((p_count,))*100 # Our initial parameter vector pi
 t = 10
-eps = 5
+eps = 15
 step_size = 5
+now = datetime.now().strftime("%y%m%d_%H%M%S")
 
 ##########################################
+
+def log_csv(data, now):
+    filename = 'trial_' + now
+    with open(filename, 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
+
 
 def send_policy(policy):
 
@@ -67,11 +77,17 @@ def send_policy(policy):
     for i in range(len(policy)):
         if policy[i] < 0:
             policy[i] = 0
-    policy = np.multiply(policy, 100) # Move decimal place 3 to the left
-    policy = [int(x)%10000 for x in policy] # always only 4 digits long
+        if policy[i] > 180:
+            policy[i] = 180
+        policy[i] = int(policy[i])
+    # policy = np.multiply(policy, 100) # Move decimal place 3 to the left
+    print("Intermediate Policy", policy)
+    # policy = [int(x)%10000 for x in policy] # always only 4 digits long
     policy = [str(x).zfill(4) for x in policy]
+    str_policy = str(policy)+'\n'
+    print("Updated Policy", str_policy)
     
-    ser.write((str(policy)+'\n').encode())
+    ser.write(str_policy.encode())
 
 
 def make_policies(params, eps):
@@ -140,16 +156,26 @@ def eval_policy(duration):
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
         
+        # print("test")
+        
         if not depth_frame or not color_frame:
             continue
 
         # Convert images to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
+        
+        
+        # Sometimes this seems to freeze everything
+        # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+        # cv2.imshow('RealSense', color_image)
+        # cv2.waitKey(1)
+        
+        # print(color_image)
             
         gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
 
-        tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.040)
+        tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
 
         if len(tags) != 0:
             tag_xyz = tags[0].pose_t
@@ -224,3 +250,10 @@ for epoch in range(10):
     print(logged_reward)
     print(params)
     print(f"Epoch {epoch+1}, reward {logged_reward}, params {params}")
+    
+    data = list(params)
+    data.append(logged_reward)
+    data.append(time.time())
+    
+    log_csv(data, now)
+    
