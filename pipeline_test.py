@@ -56,7 +56,7 @@ else:
 imu_data = []
 tag_xyz_data= []
 p_count = 16
-params = np.ones((p_count,))*100 # Our initial parameter vector pi
+params = np.ones((p_count,))*90 # Our initial parameter vector pi
 t = 10
 eps = 15
 step_size = 5
