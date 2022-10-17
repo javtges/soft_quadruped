@@ -56,7 +56,9 @@ else:
 imu_data = []
 tag_xyz_data= []
 p_count = 16
-params = np.ones((p_count,))*90 # Our initial parameter vector pi
+# params = np.ones((p_count,))*90 # Our initial parameter vector pi
+params = np.random.randint(181, size=16)
+# params = np.array([0, 180, 180, 0, 0, 180, 0, 180, 0, 180, 180, 0, 0, 180, 0, 180]) # Our initial parameter vector pi
 t = 10
 eps = 15
 step_size = 5
@@ -100,7 +102,7 @@ def make_policies(params, eps):
 
     return R_list, eps_list
 
-def eval_reward(tag_xyz_data, times):
+def eval_reward(tag_xyz_data, times, params):
     # print("Eval reward", tag_xyz_data)
     dist_array = []
     # print(imu_data)
@@ -119,6 +121,13 @@ def eval_reward(tag_xyz_data, times):
         print("distance in m/s", distance, times[-1] - times[0])
     else:
         distance = 0
+        
+    print(params)
+    data = list(params)
+    data.append(distance)
+    data.append(time.time())
+    
+    log_csv(data, now)
     return distance
 
 # Start streaming
@@ -129,7 +138,7 @@ print(intr)
 pause_flag = 0
 tag_xyz = np.zeros((3,1))
 
-def eval_policy(duration):
+def eval_policy(duration, params):
 
     starttime = time.time()
     tag_xyz_data = []
@@ -188,22 +197,24 @@ def eval_policy(duration):
             times.append(time.time() - starttime)
 
     print("end eval wait")
-    reward = eval_reward(tag_xyz_data, times)
+    reward = eval_reward(tag_xyz_data, times, params)
     return reward
     
 print("Starting Training")
-for epoch in range(10):
+for epoch in range(20):
 
     R_list, eps_list = make_policies(params, eps)
     print(R_list)
+    print(eps_list)
     rewards = []
-    A = np.zeros_like(params)
+    A = []
+    
     for policy in range(len(R_list)):
 
         # Send the policy data from R_list to the robot
         send_policy(R_list[policy])
         time.sleep(0.5)
-        reward = eval_policy(5)
+        reward = eval_policy(5, R_list[policy])
         print("Policy Reward", reward)
         rewards.append(reward)
 
@@ -222,6 +233,10 @@ for epoch in range(10):
         low_avg = 0
         zero_avg = 0
         up_avg = 0
+        
+        # print("upper", upper)
+        # print("lower", lower)
+        # print("zero", zero)
 
         # Find the averages
         if len(lower) > 0:
@@ -231,22 +246,27 @@ for epoch in range(10):
         if len(upper) > 0:
             up_avg = np.average(upper)
 
-        # print(low_avg, zero_avg, up_avg)
+        print(low_avg, zero_avg, up_avg)
         if zero_avg > low_avg and zero_avg > up_avg:
-            A[col] = 90 # This is effectively "0"
+            A.append(0)
+            print("A is 0 here")
         else:
-            A[col] = up_avg - low_avg
+            print(up_avg-low_avg)
+            diff = up_avg-low_avg
+            A.append(diff)
+            print("A is nonzero", A[col])
 
-    print(A)
+    print("unnormalized A", A)
     # r = max(np.sum(A), 0.001)
     # print(r)
-    A = (A / max(np.sum(A), 0.001) ) * step_size
-
+    A = (np.array(A) / max(np.sum(A), 0.001) ) * step_size
+    A = [int(x) for x in A]
+    print("normalized A", A)
     params += A
     # Send the policy data from params to the robot
     send_policy(params)
     time.sleep(0.5)
-    logged_reward = eval_policy(10)
+    logged_reward = eval_policy(10, params)
     print(logged_reward)
     print(params)
     print(f"Epoch {epoch+1}, reward {logged_reward}, params {params}")
