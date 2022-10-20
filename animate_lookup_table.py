@@ -45,13 +45,13 @@ def animate(i):
     ax.set_ylabel('y [m]')
     ax.set_title("HSA In-Plane Displacement")
     ax.text(0.02, 0.95, 'Time Step = %d' % i, transform=ax.transAxes)
-    s = ax.scatter(y_list[i][:], z_list[i][:], cmap = "RdBu_r", marker = ".", edgecolor = None)
+    s = ax.scatter(x_list[i][:], z_list[i][:], cmap = "RdBu_r", marker = ".", edgecolor = None)
     
 
 ani = animation.FuncAnimation(fig, animate, interval=1000, frames=range(num_max))
 
-FFwriter = animation.FFMpegWriter(fps=3)
-ani.save('animation.mp4', writer=FFwriter)
+# FFwriter = animation.FFMpegWriter(fps=3)
+ani.save('animation_xz.gif', writer='pillow')
 
 
     

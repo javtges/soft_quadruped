@@ -63,9 +63,11 @@ while True:
     # Convert images to numpy arrays
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
-        
+    cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+    cv2.imshow('RealSense', color_image)
+    cv2.waitKey(delay=1)        
     gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
-
+    
     tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
     # print(tags)
 

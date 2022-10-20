@@ -134,6 +134,7 @@ while(True):
         camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
         print("cam to tag", camera_to_tag)
         if data == [90, 90]:
+        # if data == [90, 90] and not zero_to_cam: # Thinking this may relieve the XZ plane issues? Could simply have a transform wrong
             zero_to_cam = mr.TransInv(camera_to_tag)
             transform = identity
         else:
@@ -147,9 +148,6 @@ while(True):
     if data == [180, 180]:        
         lut_count += 1
         start_csv(lut_count, filename)
-    
-    # if (lut_count == 29):
-    #     break
             
             
     
