@@ -47,6 +47,8 @@ leg4.bar(x-30, servo_12, width, color = "red")
 leg4.bar(x-10, servo_13, width, color = "blue")
 leg4.bar(x+10, servo_14, width, color = "red")
 leg4.bar(x+30, servo_15, width, color = "blue")
+leg4.set_xlabel("Time (ms)")
+leg4.set_ylabel("Servo Angle (deg)")
 
 
 fig.tight_layout()
