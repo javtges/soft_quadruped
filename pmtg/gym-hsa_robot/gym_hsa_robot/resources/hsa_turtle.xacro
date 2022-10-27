@@ -18,17 +18,17 @@
     <xacro:property name="foot_depth" value="0.01" />
 	<xacro:property name="foot_mass" value="0.25" />
 
-    <xacro:property name="leg_fl_x" value="0.4" />
-    <xacro:property name="leg_fl_y" value="0.4" />
+    <xacro:property name="leg_fl_x" value="0.035" />
+    <xacro:property name="leg_fl_y" value="0.06" />
 
-    <xacro:property name="leg_fr_x" value="0.4" />
-    <xacro:property name="leg_fr_y" value="0.4" />
+    <xacro:property name="leg_fr_x" value="0.035" />
+    <xacro:property name="leg_fr_y" value="-0.06" />
 
-    <xacro:property name="leg_rl_x" value="0.4" />
-    <xacro:property name="leg_rl_y" value="0.4" />
+    <xacro:property name="leg_rl_x" value="-0.035" />
+    <xacro:property name="leg_rl_y" value="0.06" />
 
-    <xacro:property name="leg_rr_x" value="0.4" />
-    <xacro:property name="leg_rr_y" value="0.4" />
+    <xacro:property name="leg_rr_x" value="-0.035" />
+    <xacro:property name="leg_rr_y" value="-0.06" />
 
     <xacro:property name="foot_fl_x" value="0.4" />
     <xacro:property name="foot_fl_y" value="0.4" />
@@ -134,11 +134,11 @@
         </link>
     </xacro:macro>
 
-    <xacro:macro name="leg_joint" params="link_child name">
+    <xacro:macro name="leg_joint" params="link_child name x y">
 
         <joint name="${name}" type="revolute">
             <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-            <axis xyz = "1 0 0" />
+            <axis xyz = "0 1 0" />
             <parent link="base_link" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
@@ -147,11 +147,11 @@
 
     </xacro:macro>
 
-    <xacro:macro name="foot_joint" params="link_parent link_child name">
+    <xacro:macro name="foot_joint" params="link_parent link_child name x y">
 
         <joint name="${name}" type="prismatic">
             <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-            <axis xyz = "1 0 0" />
+            <axis xyz = "0 0 1" />
             <parent link="${link_parent}" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
@@ -160,43 +160,59 @@
 
     </xacro:macro>
 
-    <xacro:leg leg_x="0" leg_y="0" name="leg_fl">
+
+    <!-- Xacro macros for our legs -->
+    <xacro:leg leg_x="${leg_fl_x}" leg_y="${leg_fl_y}" name="leg_fl">
     </xacro:leg>
 
-    <xacro:leg leg_x="0" leg_y="0" name="leg_fr">
+    <xacro:leg leg_x="${leg_fr_x}" leg_y="${leg_fr_y}" name="leg_fr">
     </xacro:leg>
 
-    <xacro:leg leg_x="0" leg_y="0" name="leg_rl">
+    <xacro:leg leg_x="${leg_rl_x}" leg_y="${leg_rl_y}" name="leg_rl">
     </xacro:leg>
 
-    <xacro:leg leg_x="0" leg_y="0" name="leg_rr">
+    <xacro:leg leg_x="${leg_rr_x}" leg_y="${leg_rr_y}" name="leg_rr">
     </xacro:leg>
 
-    <xacro:foot leg_x="0" leg_y="0" name="foot_rl">
+
+    <!-- Xacro macros for our feet -->
+    <xacro:foot leg_x="${leg_fl_x}" leg_y="${leg_fl_y}" name="foot_fl">
     </xacro:foot>
 
-    <xacro:foot leg_x="0" leg_y="0" name="foot_fr">
+    <xacro:foot leg_x="${leg_fr_x}" leg_y="${leg_fr_y}" name="foot_fr">
     </xacro:foot>
 
-    <xacro:foot leg_x="0" leg_y="0" name="foot_rl">
+    <xacro:foot leg_x="${leg_rl_x}" leg_y="${leg_rl_y}" name="foot_rl">
     </xacro:foot>
 
-    <xacro:foot leg_x="0" leg_y="0" name="foot_rr">
+    <xacro:foot leg_x="${leg_rr_x}" leg_y="${leg_rr_y}" name="foot_rr">
     </xacro:foot>
 
-    <xacro:leg_joint link_child="aa" name="aa">
+    <!-- Xacro macros for the links between our base link (the body) and the leg -->
+    <xacro:leg_joint link_child="leg_fl" name="base_to_leg_fl" x="${leg_fl_x}" y="${leg_fl_y}">
     </xacro:leg_joint>
 
-    <xacro:leg_joint link_child="aa" name="aa">
+    <xacro:leg_joint link_child="leg_fr" name="base_to_leg_fr" x="${leg_fr_x}" y="${leg_fr_y}">
     </xacro:leg_joint>
 
-    <xacro:leg_joint link_child="aa" name="aa">
+    <xacro:leg_joint link_child="leg_rl" name="base_to_leg_rl" x="${leg_rl_x}" y="${leg_rl_y}">
     </xacro:leg_joint>
 
-    <xacro:leg_joint link_child="aa" name="aa">
+    <xacro:leg_joint link_child="leg_rr" name="base_to_leg_rr" x="${leg_rr_x}" y="${leg_rr_y}">
     </xacro:leg_joint>
 
-    <xacro:foot_joint link_parent="aa" link_child="aa" name="aa">
+
+    <!-- Xacro macros for the links between our legs and our feet -->
+    <xacro:foot_joint link_parent="leg_fl" link_child="foot_fl" name="leg_to_foot_fl" x="${leg_fl_x}" y="${leg_fl_y}">
+    </xacro:foot_joint>
+
+    <xacro:foot_joint link_parent="leg_fr" link_child="foot_fr" name="leg_to_foot_fr" x="${leg_fr_x}" y="${leg_fr_y}">
+    </xacro:foot_joint>
+
+    <xacro:foot_joint link_parent="leg_rl" link_child="foot_rl" name="leg_to_foot_rl" x="${leg_rl_x}" y="${leg_rl_y}">
+    </xacro:foot_joint>
+
+    <xacro:foot_joint link_parent="leg_rr" link_child="foot_rr" name="leg_to_foot_rr" x="${leg_rr_x}" y="${leg_rr_y}">
     </xacro:foot_joint>
 
 
