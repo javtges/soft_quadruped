@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!-- Author: Peter Jochem
+     Email: jamesavtges2022@u.northwestern.edu
+     Date: 10/26/2022   -->
+<robot name="hsa_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+	
+	<xacro:property name="torso_width" value="0.14" />
+    <xacro:property name="torso_height" value="0.16" />
+    <xacro:property name="torso_depth" value="0.02" />
+    <xacro:property name="torso_mass" value="0.4" />
+
+	<xacro:property name="leg_length" value="0.4" />
+	<xacro:property name="leg_radius" value="0.025"/>
+	<xacro:property name="leg_mass" value="0.05" />
+	
+	<xacro:property name="foot_width" value="0.1" />
+    <xacro:property name="foot_height" value="0.1" />
+    <xacro:property name="foot_depth" value="0.01" />
+	<xacro:property name="foot_mass" value="0.25" />
+
+    <xacro:property name="leg_fl_x" value="0.4" />
+    <xacro:property name="leg_fl_y" value="0.4" />
+
+    <xacro:property name="leg_fr_x" value="0.4" />
+    <xacro:property name="leg_fr_y" value="0.4" />
+
+    <xacro:property name="leg_rl_x" value="0.4" />
+    <xacro:property name="leg_rl_y" value="0.4" />
+
+    <xacro:property name="leg_rr_x" value="0.4" />
+    <xacro:property name="leg_rr_y" value="0.4" />
+
+    <xacro:property name="foot_fl_x" value="0.4" />
+    <xacro:property name="foot_fl_y" value="0.4" />
+
+    <xacro:property name="foot_fr_x" value="0.4" />
+    <xacro:property name="foot_fr_y" value="0.4" />
+
+    <xacro:property name="foot_rl_x" value="0.4" />
+    <xacro:property name="foot_rl_y" value="0.4" />
+
+    <xacro:property name="foot_rr_x" value="0.4" />
+    <xacro:property name="foot_rr_y" value="0.4" />
+
+		
+	<link name="base_link">
+		<visual>
+			<geometry>
+				<box size="${torso_width} ${torso_height} ${torso_depth}" />
+			</geometry>
+		
+			<material name="gray">
+				<!-- color rgba="255 0 0 0.75" /-->
+			</material>
+			<origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+		</visual>
+	
+		<inertial>
+      			<origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+			<mass value = "${torso_mass}"/>
+			
+			<!-- Fix the inertia tag-->
+			<inertia ixx="${(1.0/12.0) * torso_mass * ( (torso_height * torso_height) + (torso_depth * torso_depth) ) }" 
+                                 iyy="${(1.0/12.0) * torso_mass * ( (torso_width * torso_width) + (torso_depth * torso_depth) ) }" 
+                                 izz="${(1.0/12.0) * torso_mass * ( (torso_width * torso_width) + (torso_height * torso_height) ) }"/>
+    		</inertial>
+
+		<collision>
+      			<origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    	  		<geometry>
+        			<box size="${torso_width} ${torso_height} ${torso_depth}" />
+     			</geometry>
+		</collision>        		
+    </link>
+
+    <xacro:macro name="leg" params="leg_x leg_y name">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="0.035 0.035 0.05" />
+                </geometry>
+                <material name="blue"/>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+            </visual>
+
+            <inertial>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+                <mass value = "0.02"/>
+
+                <inertia ixx="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.05 * 0.05) ) }" 
+                                 iyy="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.05 * 0.05) ) }" 
+                                 izz="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.035 * 0.035) ) }"/>
+
+            </inertial>
+
+            <collision>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+                <geometry>
+                    <box size="0.035 0.035 0.05" />
+                </geometry>
+
+            </collision>
+        </link>
+    </xacro:macro>
+
+
+    <xacro:macro name="foot" params="leg_x leg_y name">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="0.035 0.035 0.02" />
+                </geometry>
+                <material name="red"/>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+            </visual>
+
+            <inertial>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+                <mass value = "0.02"/>
+
+                <inertia ixx="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.02 * 0.02) ) }" 
+                                 iyy="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.02 * 0.02) ) }" 
+                                 izz="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.035 * 0.035) ) }"/>
+
+            </inertial>
+
+            <collision>
+                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+                <geometry>
+                    <box size="0.035 0.035 0.02" />
+                </geometry>
+
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="leg_joint" params="link_child name">
+
+        <joint name="${name}" type="revolute">
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <axis xyz = "1 0 0" />
+            <parent link="base_link" />
+            <child link="${link_child}" />
+                    <!-- What to set these to? -->
+            <limit velocity="1.0" effort="10" lower="${-1.57/2.0}" upper="${1.57/2.0}"/>
+        </joint>
+
+    </xacro:macro>
+
+    <xacro:macro name="foot_joint" params="link_parent link_child name">
+
+        <joint name="${name}" type="prismatic">
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <axis xyz = "1 0 0" />
+            <parent link="${link_parent}" />
+            <child link="${link_child}" />
+                    <!-- What to set these to? -->
+            <limit velocity="1.0" effort="10" lower="${-1.57/2.0}" upper="${1.57/2.0}"/>
+        </joint>
+
+    </xacro:macro>
+
+    <xacro:leg leg_x="0" leg_y="0" name="leg_fl">
+    </xacro:leg>
+
+    <xacro:leg leg_x="0" leg_y="0" name="leg_fr">
+    </xacro:leg>
+
+    <xacro:leg leg_x="0" leg_y="0" name="leg_rl">
+    </xacro:leg>
+
+    <xacro:leg leg_x="0" leg_y="0" name="leg_rr">
+    </xacro:leg>
+
+    <xacro:foot leg_x="0" leg_y="0" name="foot_rl">
+    </xacro:foot>
+
+    <xacro:foot leg_x="0" leg_y="0" name="foot_fr">
+    </xacro:foot>
+
+    <xacro:foot leg_x="0" leg_y="0" name="foot_rl">
+    </xacro:foot>
+
+    <xacro:foot leg_x="0" leg_y="0" name="foot_rr">
+    </xacro:foot>
+
+    <xacro:leg_joint link_child="aa" name="aa">
+    </xacro:leg_joint>
+
+    <xacro:leg_joint link_child="aa" name="aa">
+    </xacro:leg_joint>
+
+    <xacro:leg_joint link_child="aa" name="aa">
+    </xacro:leg_joint>
+
+    <xacro:leg_joint link_child="aa" name="aa">
+    </xacro:leg_joint>
+
+    <xacro:foot_joint link_parent="aa" link_child="aa" name="aa">
+    </xacro:foot_joint>
+
+
+	
+	
+</robot>
