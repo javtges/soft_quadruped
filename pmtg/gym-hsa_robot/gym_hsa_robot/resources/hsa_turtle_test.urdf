@@ -7,21 +7,30 @@
      Email: jamesavtges2022@u.northwestern.edu
      Date: 10/26/2022   -->
 <robot name="hsa_robot">
+  <material name="gray">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+  </material>
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+  <link name="dummy">
+    </link>
   <link name="base_link">
     <visual>
       <geometry>
         <box size="0.14 0.16 0.02"/>
       </geometry>
-      <material name="gray">
-        <!-- color rgba="255 0 0 0.75" /-->
-      </material>
+      <material name="gray"/>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <mass value="0.4"/>
       <!-- Fix the inertia tag-->
-      <inertia ixx="0.0008666666666666667" iyy="0.0006666666666666668" izz="0.0015066666666666668"/>
+      <inertia ixx="0.0008666666666666667" ixy="0" ixz="0" iyy="0.0006666666666666668" iyz="0" izz="0.0015066666666666668"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
@@ -30,18 +39,23 @@
       </geometry>
     </collision>
   </link>
+  <joint name="dummy_joint" type="fixed">
+    <parent link="dummy"/>
+    <child link="base_link"/>
+  </joint>
   <link name="leg_fl">
     <visual>
       <geometry>
         <box size="0.035 0.035 0.05"/>
       </geometry>
       <material name="blue"/>
-      <origin rpy="0 0 0" xyz="{leg_x} {leg_y} -0.025"/>
+      <origin rpy="0 0 0" xyz="0 0 -0.025"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.035 0.06 -0.025"/>
       <mass value="0.02"/>
-      <inertia ixx="6.208333333333335e-06" iyy="6.208333333333335e-06" izz="4.083333333333334e-06"/>
+      <inertia ixx="6.208333333333335e-06" ixy="0" ixz="0" iyy="6.208333333333335e-06" iyz="0" izz="4.083333333333334e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0.035 0.06 -0.025"/>
@@ -56,12 +70,13 @@
         <box size="0.035 0.035 0.05"/>
       </geometry>
       <material name="blue"/>
-      <origin rpy="0 0 0" xyz="{leg_x} {leg_y} -0.025"/>
+      <origin rpy="0 0 0" xyz="0 0 -0.025"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.035 -0.06 -0.025"/>
       <mass value="0.02"/>
-      <inertia ixx="6.208333333333335e-06" iyy="6.208333333333335e-06" izz="4.083333333333334e-06"/>
+      <inertia ixx="6.208333333333335e-06" ixy="0" ixz="0" iyy="6.208333333333335e-06" iyz="0" izz="4.083333333333334e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0.035 -0.06 -0.025"/>
@@ -76,12 +91,13 @@
         <box size="0.035 0.035 0.05"/>
       </geometry>
       <material name="blue"/>
-      <origin rpy="0 0 0" xyz="{leg_x} {leg_y} -0.025"/>
+      <origin rpy="0 0 0" xyz="0 0 -0.025"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.035 0.06 -0.025"/>
       <mass value="0.02"/>
-      <inertia ixx="6.208333333333335e-06" iyy="6.208333333333335e-06" izz="4.083333333333334e-06"/>
+      <inertia ixx="6.208333333333335e-06" ixy="0" ixz="0" iyy="6.208333333333335e-06" iyz="0" izz="4.083333333333334e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="-0.035 0.06 -0.025"/>
@@ -96,12 +112,13 @@
         <box size="0.035 0.035 0.05"/>
       </geometry>
       <material name="blue"/>
-      <origin rpy="0 0 0" xyz="{leg_x} {leg_y} -0.025"/>
+      <origin rpy="0 0 0" xyz="0 0 -0.025"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.025"/>
       <mass value="0.02"/>
-      <inertia ixx="6.208333333333335e-06" iyy="6.208333333333335e-06" izz="4.083333333333334e-06"/>
+      <inertia ixx="6.208333333333335e-06" ixy="0" ixz="0" iyy="6.208333333333335e-06" iyz="0" izz="4.083333333333334e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.025"/>
@@ -116,12 +133,13 @@
         <box size="0.035 0.035 0.02"/>
       </geometry>
       <material name="red"/>
-      <origin rpy="0 0 0" xyz="0.035 0.06 -0.06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.035 0.06 -0.06"/>
-      <mass value="0.02"/>
-      <inertia ixx="2.7083333333333334e-06" iyy="2.7083333333333334e-06" izz="4.083333333333334e-06"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.1041666666666668e-06" ixy="0" ixz="0" iyy="1.1041666666666668e-06" iyz="0" izz="2.041666666666667e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0.035 0.06 -0.06"/>
@@ -136,12 +154,13 @@
         <box size="0.035 0.035 0.02"/>
       </geometry>
       <material name="red"/>
-      <origin rpy="0 0 0" xyz="0.035 -0.06 -0.06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.035 -0.06 -0.06"/>
-      <mass value="0.02"/>
-      <inertia ixx="2.7083333333333334e-06" iyy="2.7083333333333334e-06" izz="4.083333333333334e-06"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.1041666666666668e-06" ixy="0" ixz="0" iyy="1.1041666666666668e-06" iyz="0" izz="2.041666666666667e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0.035 -0.06 -0.06"/>
@@ -156,12 +175,13 @@
         <box size="0.035 0.035 0.02"/>
       </geometry>
       <material name="red"/>
-      <origin rpy="0 0 0" xyz="-0.035 0.06 -0.06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.035 0.06 -0.06"/>
-      <mass value="0.02"/>
-      <inertia ixx="2.7083333333333334e-06" iyy="2.7083333333333334e-06" izz="4.083333333333334e-06"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.1041666666666668e-06" ixy="0" ixz="0" iyy="1.1041666666666668e-06" iyz="0" izz="2.041666666666667e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="-0.035 0.06 -0.06"/>
@@ -176,12 +196,13 @@
         <box size="0.035 0.035 0.02"/>
       </geometry>
       <material name="red"/>
-      <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <!-- <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/> -->
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.06"/>
-      <mass value="0.02"/>
-      <inertia ixx="2.7083333333333334e-06" iyy="2.7083333333333334e-06" izz="4.083333333333334e-06"/>
+      <mass value="0.01"/>
+      <inertia ixx="1.1041666666666668e-06" ixy="0" ixz="0" iyy="1.1041666666666668e-06" iyz="0" izz="2.041666666666667e-06"/>
     </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.06"/>
@@ -191,68 +212,72 @@
     </collision>
   </link>
   <joint name="base_to_leg_fl" type="revolute">
-    <origin rpy="0 0 0" xyz="0.035 0.06 0.0"/>
-    <axis xyz="0 1 0"/>
+    <!-- <origin xyz="${x} ${y} 0.0" rpy="0 0 0" /> -->
+    <origin rpy="0 0 0" xyz="0.035 0.06 -0.01"/>
+    <axis xyz="1 0 0"/>
     <parent link="base_link"/>
     <child link="leg_fl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.5" upper="0.5" velocity="1.0"/>
   </joint>
   <joint name="base_to_leg_fr" type="revolute">
-    <origin rpy="0 0 0" xyz="0.035 -0.06 0.0"/>
-    <axis xyz="0 1 0"/>
+    <!-- <origin xyz="${x} ${y} 0.0" rpy="0 0 0" /> -->
+    <origin rpy="0 0 0" xyz="0.035 -0.06 -0.01"/>
+    <axis xyz="1 0 0"/>
     <parent link="base_link"/>
     <child link="leg_fr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.5" upper="0.5" velocity="1.0"/>
   </joint>
   <joint name="base_to_leg_rl" type="revolute">
-    <origin rpy="0 0 0" xyz="-0.035 0.06 0.0"/>
-    <axis xyz="0 1 0"/>
+    <!-- <origin xyz="${x} ${y} 0.0" rpy="0 0 0" /> -->
+    <origin rpy="0 0 0" xyz="-0.035 0.06 -0.01"/>
+    <axis xyz="1 0 0"/>
     <parent link="base_link"/>
     <child link="leg_rl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.5" upper="0.5" velocity="1.0"/>
   </joint>
   <joint name="base_to_leg_rr" type="revolute">
-    <origin rpy="0 0 0" xyz="-0.035 -0.06 0.0"/>
-    <axis xyz="0 1 0"/>
+    <!-- <origin xyz="${x} ${y} 0.0" rpy="0 0 0" /> -->
+    <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.01"/>
+    <axis xyz="1 0 0"/>
     <parent link="base_link"/>
     <child link="leg_rr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.5" upper="0.5" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_fl" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.035 0.06 -0.05"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
     <axis xyz="0 0 1"/>
     <parent link="leg_fl"/>
     <child link="foot_fl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_fr" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.035 -0.06 -0.05"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
     <axis xyz="0 0 1"/>
     <parent link="leg_fr"/>
     <child link="foot_fr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_rl" type="prismatic">
-    <origin rpy="0 0 0" xyz="-0.035 0.06 -0.05"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
     <axis xyz="0 0 1"/>
     <parent link="leg_rl"/>
     <child link="foot_rl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_rr" type="prismatic">
-    <origin rpy="0 0 0" xyz="-0.035 -0.06 -0.05"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
     <axis xyz="0 0 1"/>
     <parent link="leg_rr"/>
     <child link="foot_rr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.785" upper="0.785" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
   </joint>
 </robot>
 
