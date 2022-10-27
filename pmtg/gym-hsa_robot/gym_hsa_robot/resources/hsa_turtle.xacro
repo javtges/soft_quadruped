@@ -80,11 +80,11 @@
                     <box size="0.035 0.035 0.05" />
                 </geometry>
                 <material name="blue"/>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+                <origin rpy="0 0 0" xyz="{leg_x} {leg_y} -0.025"/>
             </visual>
 
             <inertial>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+                <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/>
                 <mass value = "0.02"/>
 
                 <inertia ixx="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.05 * 0.05) ) }" 
@@ -94,7 +94,7 @@
             </inertial>
 
             <collision>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.025"/>
+                <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.025"/>
                 <geometry>
                     <box size="0.035 0.035 0.05" />
                 </geometry>
@@ -111,11 +111,11 @@
                     <box size="0.035 0.035 0.02" />
                 </geometry>
                 <material name="red"/>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+                <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/>
             </visual>
 
             <inertial>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+                <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/>
                 <mass value = "0.02"/>
 
                 <inertia ixx="${(1.0/12.0) * 0.02 * ( (0.035 * 0.035) + (0.02 * 0.02) ) }" 
@@ -125,7 +125,7 @@
             </inertial>
 
             <collision>
-                <origin rpy="0 0 0" xyz="leg_x leg_y -0.06"/>
+                <origin rpy="0 0 0" xyz="${leg_x} ${leg_y} -0.06"/>
                 <geometry>
                     <box size="0.035 0.035 0.02" />
                 </geometry>
@@ -137,7 +137,7 @@
     <xacro:macro name="leg_joint" params="link_child name x y">
 
         <joint name="${name}" type="revolute">
-            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <origin xyz="${x} ${y} 0.0" rpy="0 0 0" />
             <axis xyz = "0 1 0" />
             <parent link="base_link" />
             <child link="${link_child}" />
@@ -150,7 +150,7 @@
     <xacro:macro name="foot_joint" params="link_parent link_child name x y">
 
         <joint name="${name}" type="prismatic">
-            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <origin xyz="${x} ${y} -0.05" rpy="0 0 0" />
             <axis xyz = "0 0 1" />
             <parent link="${link_parent}" />
             <child link="${link_child}" />
