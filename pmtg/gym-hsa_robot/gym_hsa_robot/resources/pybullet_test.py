@@ -26,6 +26,7 @@ for i in range(10000):
     p.setJointMotorControl2(robot, jointIndex=8, controlMode=p.POSITION_CONTROL, targetPosition=-0.2, force=maxForce)
 
     p.setJointMotorControl2(robot, jointIndex=1, controlMode=p.POSITION_CONTROL, targetPosition=0.4, force=maxForce)
+    p.setJointMotorControl2(robot, jointIndex=0, controlMode=p.POSITION_CONTROL, targetPosition=0.4, force=maxForce)
 
     p.stepSimulation()
     time.sleep(1/240)
