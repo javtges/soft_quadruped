@@ -79,7 +79,7 @@
                                  ixy="0"
                                  ixz="0"
                                  iyz="0"/>
-    		</inertial>
+    	</inertial>
 
 		<collision>
       			<origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>

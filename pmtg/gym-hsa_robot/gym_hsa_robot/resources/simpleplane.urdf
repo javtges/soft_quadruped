@@ -1,11 +1,11 @@
-<!-- This URDF taken from this GitHub repo: https://github.com/GerardMaggiolino/Gym-Medium-Post/blob/main/simple_driving/resources/simpleplane.urdf -->
-
 <?xml version="1.0"?> 
 <robot name="simpleplane">
     <!-- Colors --> 
     <material name="grey"> 
         <color rgba="0.91 0.925 0.945 1"/>
     </material>
+
+    <!-- This URDF taken from this GitHub repo: https://github.com/GerardMaggiolino/Gym-Medium-Post/blob/main/simple_driving/resources/simpleplane.urdf -->
 
     <!-- Plane -->
     <link name="base_link">
