@@ -14,7 +14,7 @@ class HSARobot_Env(gym.Env):
     def __init__(self):
         
         self.client = p.connect(p.GUI)
-        p.setTimeStep(1/30, self.client)
+        p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
         

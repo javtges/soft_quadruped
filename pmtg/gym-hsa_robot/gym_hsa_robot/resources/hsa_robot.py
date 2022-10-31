@@ -32,27 +32,27 @@ class HSARobot:
         leg_positions = [action[1], action[3], action[5], action[7]]
         foot_positions = [action[2], action[4], action[6], action[8]]
         
-        # p.setJointMotorControlArray(self.robot, self.leg_joints,
-        #                             controlMode=p.POSITION_CONTROL,
-        #                             targetPositions=leg_positions,
-        #                             forces=[5,5,5,5],
-        #                             physicsClientId=self.client)
+        p.setJointMotorControlArray(self.robot, self.leg_joints,
+                                    controlMode=p.POSITION_CONTROL,
+                                    targetPositions=leg_positions,
+                                    forces=[5,5,5,5],
+                                    physicsClientId=self.client)
         
-        # p.setJointMotorControlArray(self.robot, self.foot_joints,
-        #                             controlMode=p.POSITION_CONTROL,
-        #                             targetPositions=foot_positions,
-        #                             forces=[5,5,5,5],
-        #                             physicsClientId=self.client)
+        p.setJointMotorControlArray(self.robot, self.foot_joints,
+                                    controlMode=p.POSITION_CONTROL,
+                                    targetPositions=foot_positions,
+                                    forces=[5,5,5,5],
+                                    physicsClientId=self.client)
         
-        p.setJointMotorControl2(self.robot, jointIndex=2, controlMode=p.POSITION_CONTROL, targetPosition=-0.001, force=10)
-        p.setJointMotorControl2(self.robot, jointIndex=4, controlMode=p.POSITION_CONTROL, targetPosition=-0.001, force=10)
-        p.setJointMotorControl2(self.robot, jointIndex=6, controlMode=p.POSITION_CONTROL, targetPosition=-0.001, force=10)
-        p.setJointMotorControl2(self.robot, jointIndex=8, controlMode=p.POSITION_CONTROL, targetPosition=-0.001, force=10)
+        # p.setJointMotorControl2(self.robot, jointIndex=2, controlMode=p.POSITION_CONTROL, targetPosition=-0.02, force=10)
+        # p.setJointMotorControl2(self.robot, jointIndex=4, controlMode=p.POSITION_CONTROL, targetPosition=-0.02, force=10)
+        # p.setJointMotorControl2(self.robot, jointIndex=6, controlMode=p.POSITION_CONTROL, targetPosition=-0.02, force=10)
+        # p.setJointMotorControl2(self.robot, jointIndex=8, controlMode=p.POSITION_CONTROL, targetPosition=-0.02, force=10)
 
-        p.setJointMotorControl2(self.robot, jointIndex=1, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
-        p.setJointMotorControl2(self.robot, jointIndex=3, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
-        p.setJointMotorControl2(self.robot, jointIndex=5, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
-        p.setJointMotorControl2(self.robot, jointIndex=7, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
+        # p.setJointMotorControl2(self.robot, jointIndex=1, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
+        # p.setJointMotorControl2(self.robot, jointIndex=3, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
+        # p.setJointMotorControl2(self.robot, jointIndex=5, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
+        # p.setJointMotorControl2(self.robot, jointIndex=7, controlMode=p.POSITION_CONTROL, targetPosition=0, force=5)
 
         
     def get_observation(self):
