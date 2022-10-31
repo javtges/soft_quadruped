@@ -169,7 +169,7 @@
         <joint name="${name}" type="revolute">
             <!-- <origin xyz="${x} ${y} 0.0" rpy="0 0 0" /> -->
             <origin xyz="${x} ${y} -0.01" rpy="0 0 0" />
-            <axis xyz = "1 0 0" />
+            <axis xyz = "0 1 0" />
             <parent link="base_link" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
@@ -186,7 +186,7 @@
             <parent link="${link_parent}" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
-            <limit velocity="1.0" effort="10" lower="-0.02" upper="0.02"/>
+            <limit velocity="1.0" effort="10" lower="-0.02" upper="0.0199"/>
         </joint>
 
     </xacro:macro>
