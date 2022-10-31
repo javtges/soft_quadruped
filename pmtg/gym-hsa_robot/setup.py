@@ -1,6 +1,8 @@
 from setuptools import setup
 
-setup(name='gym-hsa_robot',
+setup(name='gym_hsa_robot',
       version='0.0.1',
-      install_requires=['gym']
+      install_requires=['gym',
+                        'pybullet',
+                        'numpy']
 )

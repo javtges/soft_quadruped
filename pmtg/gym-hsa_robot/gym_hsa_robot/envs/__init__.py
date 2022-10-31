@@ -1,1 +1,1 @@
-from gym_hsa_robot.envs.hsa_robot_env import HSARobot_Env
+from gym_hsa_robot.envs.hsa_robot_env2 import HSARobot_Env
