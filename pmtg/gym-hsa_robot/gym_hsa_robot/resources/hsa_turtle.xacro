@@ -56,6 +56,19 @@
 
 
     <link name="dummy">
+
+        <inertial>
+      			<origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+			<mass value = "0.001"/>
+			
+			<!-- Fix the inertia tag-->
+			<inertia ixx="0" 
+                     iyy="0" 
+                     izz="0"
+                     ixy="0"
+                     ixz="0"
+                     iyz="0"/>
+    	</inertial>
     </link>
 		
 	<link name="base_link">

@@ -8,35 +8,41 @@ from gym_hsa_robot.resources.hsa_robot import HSARobot
 
 class HSARobot_Env(gym.Env):
     
+    metadata = {'render.modes': ['human']}
+
+    
     def __init__(self):
         
+        self.client = p.connect(p.GUI)
+        p.setTimeStep(1/30, self.client)
         
+        # Here, define my action space and my observation space
+        
+        self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = None
+        self.done = False
+        self.rendered_img = None
+        self.render_rot_matrix = None
+        
         
         self.reset()
     
     def step(self, action):
-        # Feed action to the car and get observation of car's state
+        # Feed action to the robot and get observation of its state
         self.robot.apply_action(action)
         p.stepSimulation()
         robot_ob = self.robot.get_observation()
-
-        # Compute reward as L2 change in distance to goal
-        dist_to_goal = math.sqrt(((car_ob[0] - self.goal[0]) ** 2 +
-                                  (car_ob[1] - self.goal[1]) ** 2))
-        reward = max(self.prev_dist_to_goal - dist_to_goal, 0)
-        self.prev_dist_to_goal = dist_to_goal
+        
+        reward = np.linalg.norm(robot_ob[-3:])
 
         # Done by running off boundaries
-        if (car_ob[0] >= 10 or car_ob[0] <= -10 or
-                car_ob[1] >= 10 or car_ob[1] <= -10):
-            self.done = True
+
         # Done by reaching goal
-        elif dist_to_goal < 1:
+        if reward > 0.1:
             self.done = True
             reward = 50
 
-        ob = np.array(car_ob + self.goal, dtype=np.float32)
+        ob = np.array(robot_ob, dtype=np.float32)
         return ob, reward, self.done, dict()
     
     def reset(self):
@@ -45,7 +51,7 @@ class HSARobot_Env(gym.Env):
         
         # Reload the plane and robot
         Plane(self.client)
-        self.robot = Robot(self.client)
+        self.robot = HSARobot(self.client)
 
 
         # Get observation to return

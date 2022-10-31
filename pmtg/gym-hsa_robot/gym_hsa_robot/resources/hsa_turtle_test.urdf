@@ -17,7 +17,13 @@
     <color rgba="0.0 0.0 0.8 1.0"/>
   </material>
   <link name="dummy">
-    </link>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <mass value="0.001"/>
+      <!-- Fix the inertia tag-->
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
   <link name="base_link">
     <visual>
       <geometry>
@@ -253,7 +259,7 @@
     <parent link="leg_fl"/>
     <child link="foot_fl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.0199" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_fr" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
@@ -261,7 +267,7 @@
     <parent link="leg_fr"/>
     <child link="foot_fr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.0199" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_rl" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
@@ -269,7 +275,7 @@
     <parent link="leg_rl"/>
     <child link="foot_rl"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.0199" velocity="1.0"/>
   </joint>
   <joint name="leg_to_foot_rr" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.06"/>
@@ -277,7 +283,7 @@
     <parent link="leg_rr"/>
     <child link="foot_rr"/>
     <!-- What to set these to? -->
-    <limit effort="10" lower="-0.02" upper="0.02" velocity="1.0"/>
+    <limit effort="10" lower="-0.02" upper="0.0199" velocity="1.0"/>
   </joint>
 </robot>
 
