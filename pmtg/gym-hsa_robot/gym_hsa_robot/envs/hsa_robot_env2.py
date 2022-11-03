@@ -13,11 +13,15 @@ class HSARobot_Env(gym.Env):
     
     def __init__(self):
         
-        self.client = p.connect(p.GUI)
+        # self.client = p.connect(p.GUI)
+        self.client = p.connect(p.DIRECT)
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
         
+        self.action_space = gym.spaces.Box(np.array([-0.01, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3]), np.array([0.01, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3]))
+        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -1, -1, -1000, -1000]), np.array([1000, 1000, 1, 1, 1000, 1000]))
+
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = None
         self.done = False
@@ -33,7 +37,8 @@ class HSARobot_Env(gym.Env):
         p.stepSimulation()
         robot_ob = self.robot.get_observation()
         
-        reward = np.linalg.norm(robot_ob[-3:])
+        # reward = np.linalg.norm(robot_ob[-3:])
+        reward = robot_ob[4]
 
         # Done by running off boundaries
 
@@ -41,6 +46,7 @@ class HSARobot_Env(gym.Env):
         if reward > 0.1:
             self.done = True
             reward = 50
+        
 
         ob = np.array(robot_ob, dtype=np.float32)
         return ob, reward, self.done, dict()

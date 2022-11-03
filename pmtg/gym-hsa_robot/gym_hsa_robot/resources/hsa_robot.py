@@ -65,8 +65,12 @@ class HSARobot:
         pos = pos[:2]
         # Get the velocity of the robot
         vel = p.getBaseVelocity(self.robot, self.client)[0][0:2]
-
+        
+        # print(p.getBaseVelocity(self.robot, self.client))
         # Concatenate position, orientation, velocity
+        # print("pos", pos)
+        # print("ori", ori)
+        # print("vel", vel)
         observation = (pos + ori + vel)
 
         return observation
