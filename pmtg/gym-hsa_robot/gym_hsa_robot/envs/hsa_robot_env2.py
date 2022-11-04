@@ -2,9 +2,15 @@ import gym
 import numpy as np
 import pybullet as p
 import math
+import time
 from gym_hsa_robot.resources.plane import Plane
 from gym_hsa_robot.resources.hsa_robot import HSARobot
 import matplotlib.pyplot as plt
+
+NUM_LEGS = 4
+NUM_JOINTS = 8
+RENDER_WIDTH = 960
+RENDER_HEIGHT = 720
 
 
 class HSARobot_Env(gym.Env):
@@ -14,8 +20,8 @@ class HSARobot_Env(gym.Env):
     
     def __init__(self):
         
-        self.client = p.connect(p.GUI)
-        # self.client = p.connect(p.DIRECT)
+        # self.client = p.connect(p.GUI)
+        self.client = p.connect(p.DIRECT)
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
@@ -28,7 +34,10 @@ class HSARobot_Env(gym.Env):
         self.done = False
         self.rendered_img = None
         self.render_rot_matrix = None
-        
+        self._last_frame_time = time.time()
+        self._cam_dist = 1.0
+        self._cam_yaw = 0
+        self._cam_pitch = -30       
         
         self.reset()
     
@@ -66,33 +75,59 @@ class HSARobot_Env(gym.Env):
 
         return np.array(robot_ob, dtype=np.float32)
     
-    def render(self, mode='human'):
+    def render(self, mode='rgb_array'):
+        
+        """This renders the system. Adapted from:
+        https://github.com/OpenQuadruped/spot_mini_mini
+        """        
+        
         if self.rendered_img is None:
             self.rendered_img = plt.imshow(np.zeros((100, 100, 4)))
 
-        # Base information
+        # # Base information
         robot_id, client_id = self.robot.get_ids()
-        proj_matrix = p.computeProjectionMatrixFOV(fov=80, aspect=1,
-                                                   nearVal=0.01, farVal=100)
-        pos, ori = [list(l) for l in
-                    p.getBasePositionAndOrientation(robot_id, client_id)]
-        pos[2] = 0.2
-
-        # Rotate camera direction
-        rot_mat = np.array(p.getMatrixFromQuaternion(ori)).reshape(3, 3)
-        camera_vec = np.matmul(rot_mat, [1, 0, 0])
-        up_vec = np.matmul(rot_mat, np.array([0, 0, 1]))
-        # view_matrix = p.computeViewMatrix(pos, pos + camera_vec, up_vec)
-
-        view_matrix = p.computeViewMatrix([0,1,0.5], [0,0,0], up_vec)
-
-        # Display image
-        frame = p.getCameraImage(100, 100, view_matrix, proj_matrix)[2]
-        # frame = p.getCameraImage(100, 100)[2]
-        frame = np.reshape(frame, (100, 100, 4))
-        self.rendered_img.set_data(frame)
+        
+        time_spent = time.time() - self._last_frame_time
+        self._last_frame_time = time.time()
+        time_to_sleep = (1/240) - time_spent
+        # if time_to_sleep > 0:
+        #     time.sleep(time_to_sleep)
+        base_pos, ori = p.getBasePositionAndOrientation(robot_id, client_id)
+        # Keep the previous orientation of the camera set by the user.
+        [yaw, pitch,
+            dist] = p.getDebugVisualizerCamera()[8:11]
+        p.resetDebugVisualizerCamera(
+            dist, yaw, pitch, base_pos)
+        
+        # if mode != "rgb_array":
+        #     return np.array([])
+        base_pos = self.robot.GetBasePosition()
+        view_matrix = p.computeViewMatrixFromYawPitchRoll(
+            cameraTargetPosition=base_pos,
+            distance=self._cam_dist,
+            yaw=self._cam_yaw,
+            pitch=self._cam_pitch,
+            roll=0,
+            upAxisIndex=2)
+        proj_matrix = p.computeProjectionMatrixFOV(
+            fov=60,
+            aspect=float(RENDER_WIDTH) / RENDER_HEIGHT,
+            nearVal=0.1,
+            farVal=100.0)
+        (_, _, px, _, _) = p.getCameraImage(
+            width=RENDER_WIDTH,
+            height=RENDER_HEIGHT,
+            viewMatrix=view_matrix,
+            projectionMatrix=proj_matrix,
+            renderer=p.ER_BULLET_HARDWARE_OPENGL)
+        rgb_array = np.array(px)
+        rgb_array = rgb_array[:, :, :3]
+        
+        self.rendered_img.set_data(rgb_array)
         plt.draw()
         plt.pause(.00001)
+        return rgb_array
+        
     
     def close(self):
         p.disconnect((self.client))

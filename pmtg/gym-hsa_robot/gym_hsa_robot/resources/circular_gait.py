@@ -40,5 +40,7 @@ while True:
         action = [0,ac_eps[i],ac_theta[i],bd_eps[i],bd_theta[i],bd_eps[i],bd_theta[i],ac_eps[i],ac_theta[i]]
         observation, reward, done, info = env.step(action)
         time.sleep(1/240)
+        env.render()
+        # plt.show(a)
         
         print(observation)

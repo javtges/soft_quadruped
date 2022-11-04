@@ -74,3 +74,11 @@ class HSARobot:
         observation = (pos + ori + vel)
 
         return observation
+    
+    def GetBasePosition(self):
+        """Get the position of the robot's base.
+    Returns:
+      The position of the robot's base.
+    """
+        position, _ = p.getBasePositionAndOrientation(self.robot, self.client)
+        return position
