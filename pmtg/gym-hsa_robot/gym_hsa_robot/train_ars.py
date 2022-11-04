@@ -125,8 +125,9 @@ class Policy():
         self.theta += hp.learning_rate / \
             (hp.nb_best_directions * sigma_r) * step
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        np.save(args.logdir + "/policy_" + self.env_name +
-                "_" + timestr + ".npy", self.theta)
+        # np.save(args.logdir + "/policy_" + self.env_name +
+                # "_" + timestr + ".npy", self.theta)
+        # print(self.theta, self.theta.shape)
 
 
 def explore(env, normalizer, policy, direction, delta, hp):
