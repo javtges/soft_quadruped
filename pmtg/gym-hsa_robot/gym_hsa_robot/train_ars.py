@@ -74,6 +74,8 @@ class Ellipse_TG():
 
     def rotate(l, n):
         return l[n:] + l[:n]
+    
+    
 
     def make_circle(self, x_center, y_center, r_x, r_y, n):
 
@@ -123,7 +125,7 @@ class Ellipse_TG():
         theta = np.arctan2(y, x) + 1.5707
         # print("theta", theta)
 
-        eps = l - 0.05
+        eps = l - 0.07
 
         return theta, eps
 
@@ -131,6 +133,22 @@ class Ellipse_TG():
         x_foot = x
         y_foot = y+0.05
         return x_foot, y_foot
+    
+    def step_traj(self, width, height, n):
+        '''
+        Given: a width, height, find the (theta, eps) that makes sense at the given timestep
+        '''
+        x,y = make_circle(self, 0.0, -0.07, width, height, self.cycle_length)
+        for idx, val in enumerate(x):
+            eps, theta = xy_legframe_to_joints(x[idx], y[idx])
+        
+        ep_out = eps[self.phase]
+        theta_out = theta[self.phase]
+        self.phase += 1
+        if self.phase == self.cycle_length:
+            self.phase = 0
+            
+        return ep_out, theta_out
 
 
 class Hp():
