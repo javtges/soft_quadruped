@@ -62,6 +62,77 @@ ARS Class
 # Setting the Hyper Parameters
 
 
+class Ellipse_TG():
+
+    def __init__(self):
+        self.cycle_length = 240
+        self.phase = 0
+        self.center_x = 0.0
+        self.center_y = -0.07
+        self.width = 0.02
+        self.height = 0.02
+
+    def rotate(l, n):
+        return l[n:] + l[:n]
+
+    def make_circle(self, x_center, y_center, r_x, r_y, n):
+
+        x_cir = []
+        y_cir = []
+        for i in range(n):
+            xx = r_x * np.sin(2*np.pi * i / n) + x_center
+            x_cir.append(xx)
+
+            yy = r_y * np.cos(2*np.pi * i / n) + y_center
+            y_cir.append(yy)
+
+        return x_cir, y_cir
+
+    def make_traj(self, offset):
+        offset = offset*-1
+        test = np.linspace(0, 1, 240)
+        # print(test)
+        eps_list = []
+        theta_list = []
+
+        for t in test:
+
+            # eps = -0.05 + 0.02/ np.sin(2.0 * np.arctan( 1/(np.tan(np.pi * t) - 1) - (np.sin(np.pi * t) / (np.sin(np.pi * t) - np.cos( np.pi * t )))    ))
+            # theta = 2 * np.arctan( (np.tan(np.pi*t) - 1) / (np.tan(np.pi*t) + 1) )
+
+            eps = 0.02 * np.cos(2*np.pi*t)
+            theta = 0.02 * np.sin(2*np.pi*t)
+            eps_list.append(eps)
+            theta_list.append(theta)
+
+        eps_list = rotate(eps_list, offset)
+        theta_list = rotate(theta_list, offset)
+
+        # print(eps_list, theta_list)
+
+        return eps_list, theta_list
+
+    def joints_to_xy_legframe(self, theta, eps):
+        x = (0.05+eps)*np.sin(theta)
+        y = -(0.05+eps)*np.cos(theta)
+        return x, y
+
+    def xy_legframe_to_joints(self, x, y):
+        l = np.linalg.norm([x, y])
+        # print("l", l)
+        theta = np.arctan2(y, x) + 1.5707
+        # print("theta", theta)
+
+        eps = l - 0.05
+
+        return theta, eps
+
+    def legframe_to_footframe(self, x, y):
+        x_foot = x
+        y_foot = y+0.05
+        return x_foot, y_foot
+
+
 class Hp():
 
     def __init__(self):
@@ -126,7 +197,7 @@ class Policy():
             (hp.nb_best_directions * sigma_r) * step
         timestr = time.strftime("%Y%m%d-%H%M%S")
         # np.save(args.logdir + "/policy_" + self.env_name +
-                # "_" + timestr + ".npy", self.theta)
+        # "_" + timestr + ".npy", self.theta)
         # print(self.theta, self.theta.shape)
 
 
@@ -139,6 +210,8 @@ def explore(env, normalizer, policy, direction, delta, hp):
         normalizer.observe(state)
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
+
+        # Here, generate the trajectory from the trajectory generator. Use the actions
         state, reward, done, _ = env.step(action)
         reward = max(min(reward, 1), -1)
         sum_rewards += reward
