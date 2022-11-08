@@ -71,6 +71,8 @@ range2 = np.linspace(0, 180, 19)
 now = datetime.now().strftime("%y%m%d_%H%M%S")
 lut_count = 0
 filename = 'table_' + now + "_"
+filename_zero = filename + "_no_reset_"
+zero_transform_flag = True
 
 
 def start_csv(lut_count, filename):
@@ -114,11 +116,11 @@ while(True):
     color_image = np.asanyarray(color_frame.get_data())
         
     # Sometimes this seems to freeze everything. Unsure as to what's going on
-    cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('RealSense', color_image)
-    cv2.waitKey(delay=1)        
+    # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow('RealSense', color_image)
+    # cv2.waitKey(delay=1)        
     gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
-    print(gray)
+    # print(gray)
 
     tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
     if tags:
@@ -132,15 +134,25 @@ while(True):
         
         
         camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
+        
+        
         print("cam to tag", camera_to_tag)
         if data == [90, 90]:
         # if data == [90, 90] and not zero_to_cam: # Thinking this may relieve the XZ plane issues? Could simply have a transform wrong
             zero_to_cam = mr.TransInv(camera_to_tag)
             transform = identity
+            
+            if zero_transform_flag:
+                zero_transform_flag = False
+                zero_to_cam_first = zero_to_cam
         else:
             transform = zero_to_cam @ camera_to_tag # this should give us zero->tag transform
     
+    
+        transform_zero = zero_to_cam_first @ camera_to_tag
         write_csv(lut_count, filename, data, transform)
+        write_csv(lut_count, filename_zero, data, transform_zero)
+
     
     else:
         print("No tag!")
