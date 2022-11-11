@@ -71,11 +71,10 @@ class Ellipse_TG():
         self.center_y = -0.07
         self.width = 0.02
         self.height = 0.02
+        self.n_params = 2
 
     def rotate(l, n):
         return l[n:] + l[:n]
-    
-    
 
     def make_circle(self, x_center, y_center, r_x, r_y, n):
 
@@ -93,14 +92,10 @@ class Ellipse_TG():
     def make_traj(self, offset):
         offset = offset*-1
         test = np.linspace(0, 1, 240)
-        # print(test)
         eps_list = []
         theta_list = []
 
         for t in test:
-
-            # eps = -0.05 + 0.02/ np.sin(2.0 * np.arctan( 1/(np.tan(np.pi * t) - 1) - (np.sin(np.pi * t) / (np.sin(np.pi * t) - np.cos( np.pi * t )))    ))
-            # theta = 2 * np.arctan( (np.tan(np.pi*t) - 1) / (np.tan(np.pi*t) + 1) )
 
             eps = 0.02 * np.cos(2*np.pi*t)
             theta = 0.02 * np.sin(2*np.pi*t)
@@ -133,21 +128,21 @@ class Ellipse_TG():
         x_foot = x
         y_foot = y+0.05
         return x_foot, y_foot
-    
+
     def step_traj(self, width, height, n):
         '''
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
-        x,y = make_circle(self, 0.0, -0.07, width, height, self.cycle_length)
+        x, y = make_circle(self, 0.0, -0.07, width, height, self.cycle_length)
         for idx, val in enumerate(x):
             eps, theta = xy_legframe_to_joints(x[idx], y[idx])
-        
+
         ep_out = eps[self.phase]
         theta_out = theta[self.phase]
         self.phase += 1
         if self.phase == self.cycle_length:
             self.phase = 0
-            
+
         return ep_out, theta_out
 
 
@@ -188,13 +183,19 @@ class Normalizer():
 
 class Policy():
 
-    def __init__(self, input_size, output_size, env_name, args):
+    def __init__(self, input_size, output_size, env_name, traj_generator, args):
+        
+        # self.tg_AC = Ellipse_TG()
+        # self.tg_BC = Ellipse_TG()
+        # self.tg_BC.phase = 120 # Set the TG's phase to 120, 180 degrees out of phase of the other two legs
+        
         try:
             self.theta = np.load(args.policy)
         except:
             self.theta = np.zeros((output_size, input_size))
         self.env_name = env_name
         print("Starting policy theta=", self.theta)
+        print("Policy size=", self.theta.shape)
 
     def evaluate(self, input, delta, direction, hp):
         if direction is None:
@@ -214,20 +215,26 @@ class Policy():
         self.theta += hp.learning_rate / \
             (hp.nb_best_directions * sigma_r) * step
         timestr = time.strftime("%Y%m%d-%H%M%S")
+
         # np.save(args.logdir + "/policy_" + self.env_name +
         # "_" + timestr + ".npy", self.theta)
         # print(self.theta, self.theta.shape)
 
 
-def explore(env, normalizer, policy, direction, delta, hp):
+def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     state = env.reset()
     done = False
     num_plays = 0.
     sum_rewards = 0
     while not done and num_plays < hp.episode_length:
-        normalizer.observe(state)
+        normalizer.observe(state) # Augment this to include the variables we need from the TG / residuals
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
+        
+        # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
+        
+        # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
+        # Sample from all 4 trajectory generators, make an action from all of them
 
         # Here, generate the trajectory from the trajectory generator. Use the actions
         state, reward, done, _ = env.step(action)
@@ -237,7 +244,7 @@ def explore(env, normalizer, policy, direction, delta, hp):
     return sum_rewards
 
 
-def train(env, policy, normalizer, hp, args):
+def train(env, policy, normalizer, hp, traj_generators, args):
 
     for step in range(hp.nb_steps):
 
@@ -248,12 +255,12 @@ def train(env, policy, normalizer, hp, args):
         # Getting the positive rewards in the positive directions
         for k in range(hp.nb_directions):
             pos_rewards[k] = explore(
-                env, normalizer, policy, "positive", deltas[k], hp)
+                env, normalizer, policy, "positive", deltas[k], hp, traj_generators)
 
             # Getting the negative rewards in the negative/opposite directions
         for k in range(hp.nb_directions):
             neg_rewards[k] = explore(
-                env, normalizer, policy, "negative", deltas[k], hp)
+                env, normalizer, policy, "negative", deltas[k], hp, traj_generators)
 
         all_rewards = np.array(pos_rewards + neg_rewards)
         sigma_r = all_rewards.std()
@@ -272,7 +279,7 @@ def train(env, policy, normalizer, hp, args):
         policy.update(rollouts, sigma_r, args)
 
         # Printing the final reward of the policy after the update
-        reward_evaluation = explore(env, normalizer, policy, None, None, hp)
+        reward_evaluation = explore(env, normalizer, policy, None, None, hp, traj_generator)
         print('Step:', step, 'Reward:', reward_evaluation)
 
 
@@ -286,24 +293,32 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     hp = Hp()
+    TG_fl = Ellipse_TG()
+    TG_fr = Ellipse_TG()
+    TG_rl = Ellipse_TG()
+    TG_rr = Ellipse_TG()
+    
+    tg_arr = [TG_fl,TG_fr,TG_rl,TG_rr]
 
     print("seed = ", hp.seed)
     np.random.seed(hp.seed)
-
-    # Here, we now gotta:
 
     # make the environment
     env = gym.make("hsa_robot-v0")
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0]  # + TG.n_params()
-    n_outputs = env.action_space.shape[0]  # + TG.n_params()
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
+    n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
+    
+    print("Observation space =", n_inputs)
+    print("Action space =", n_outputs)
 
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
-                    env_name=hp.env_name, args=args)
+                    env_name=hp.env_name, traj_generator=tg_arr, args=args)
+
     normalizer = Normalizer(n_inputs)
 
     # Now, we start training
 
-    train(env, policy, normalizer, hp, args)
+    train(env, policy, normalizer, hp, tg_arr, args)

@@ -6,10 +6,11 @@ import pandas as pd
 
 
 # filename_default = "table_221018_154600_"
-filename_default = "table_221107_212842_"
+# filename_default = "table_221107_212842_"
+filename_default = "/home/james/final_project/src/pmtg/gym-hsa_robot/gym_hsa_robot/resources/table_221109_223329_"
 
 num = 0
-num_max = 3
+num_max = 1
 
 x_list = []
 z_list = []
@@ -47,13 +48,13 @@ def animate(i):
     ax.set_ylabel('y [m]')
     ax.set_title("HSA In-Plane Displacement")
     ax.text(0.02, 0.95, 'Time Step = %d' % i, transform=ax.transAxes)
-    s = ax.scatter(x_list[i][:], y_list[i][:], cmap = "RdBu_r", marker = ".", edgecolor = None)
+    s = ax.scatter(x_list[i][:], z_list[i][:], cmap = "RdBu_r", marker = ".", edgecolor = None)
     
 
 ani = animation.FuncAnimation(fig, animate, interval=1000, frames=range(num_max))
 
 # FFwriter = animation.FFMpegWriter(fps=3)
-ani.save('animation_with_reset_xy.gif', writer='pillow')
+ani.save('animation_with_reset_xz.gif', writer='pillow')
 
 
     
