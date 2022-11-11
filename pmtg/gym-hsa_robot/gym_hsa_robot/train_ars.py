@@ -115,10 +115,10 @@ class Ellipse_TG():
         return x, y
 
     def xy_legframe_to_joints(self, x, y):
-        l = np.linalg.norm([x, y])
-        # print("l", l)
+        l = np.linalg.norm([x, y], axis=0)
+        # print("l", l.shape)
         theta = np.arctan2(y, x) + 1.5707
-        # print("theta", theta)
+        # print("theta", theta.shape)
 
         eps = l - 0.07
 
@@ -129,16 +129,23 @@ class Ellipse_TG():
         y_foot = y+0.05
         return x_foot, y_foot
 
-    def step_traj(self, width, height, n):
+    def step_traj(self, width, height, res_x, res_y):
         '''
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
-        x, y = make_circle(self, 0.0, -0.07, width, height, self.cycle_length)
-        for idx, val in enumerate(x):
-            eps, theta = xy_legframe_to_joints(x[idx], y[idx])
+        x, y = self.make_circle(0.0, -0.07, width, height, self.cycle_length)
+        x = np.asarray(x) + res_x
+        y = np.asarray(y) + res_y
+        
+        # for idx, val in enumerate(x):
+        #     eps, theta = self.xy_legframe_to_joints(x[idx], y[idx])
+            
+        theta, eps = self.xy_legframe_to_joints(x, y)
 
-        ep_out = eps[self.phase]
-        theta_out = theta[self.phase]
+        # print(eps.shape, theta.shape)
+        # print("phase:", self.phase)
+        ep_out = eps[int(self.phase)]
+        theta_out = theta[int(self.phase)]
         self.phase += 1
         if self.phase == self.cycle_length:
             self.phase = 0
@@ -184,11 +191,11 @@ class Normalizer():
 class Policy():
 
     def __init__(self, input_size, output_size, env_name, traj_generator, args):
-        
+
         # self.tg_AC = Ellipse_TG()
         # self.tg_BC = Ellipse_TG()
         # self.tg_BC.phase = 120 # Set the TG's phase to 120, 180 degrees out of phase of the other two legs
-        
+
         try:
             self.theta = np.load(args.policy)
         except:
@@ -223,21 +230,45 @@ class Policy():
 
 def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     state = env.reset()
+    # print("state", state)  # this is an ndarray
     done = False
     num_plays = 0.
     sum_rewards = 0
     while not done and num_plays < hp.episode_length:
-        normalizer.observe(state) # Augment this to include the variables we need from the TG / residuals
+
+        # print(traj_generators[0].width)
+        tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
+                              traj_generators[1].width, traj_generators[1].height,
+                              traj_generators[2].width, traj_generators[2].height,
+                              traj_generators[3].width, traj_generators[3].height], dtype=float)
+        state = np.concatenate((state, tg_params), axis=0)
+        # print(state)
+        # Augment this to include the variables we need from the TG
+        normalizer.observe(state)
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
+
+        # print(action)
         
+        # print("leg1")
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=action[0], height=action[1], res_x=action[2], res_y=action[3])
+        # print("leg2")
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=action[4], height=action[5], res_x=action[6], res_y=action[7])
+        # print("leg3")
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=action[8], height=action[9], res_x=action[10], res_y=action[11])
+        # print("leg4")
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=action[12], height=action[13], res_x=action[14], res_y=action[15])
+
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
-        
+
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
         # Sample from all 4 trajectory generators, make an action from all of them
+        # print(aaaaaaaaa)
 
+        # Make sure that the order of legs here is correct
+        actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
-        state, reward, done, _ = env.step(action)
+        state, reward, done, _ = env.step(actions_tg)
         reward = max(min(reward, 1), -1)
         sum_rewards += reward
         num_plays += 1
@@ -279,7 +310,8 @@ def train(env, policy, normalizer, hp, traj_generators, args):
         policy.update(rollouts, sigma_r, args)
 
         # Printing the final reward of the policy after the update
-        reward_evaluation = explore(env, normalizer, policy, None, None, hp, traj_generator)
+        reward_evaluation = explore(
+            env, normalizer, policy, None, None, hp, traj_generators)
         print('Step:', step, 'Reward:', reward_evaluation)
 
 
@@ -294,11 +326,16 @@ if __name__ == "__main__":
 
     hp = Hp()
     TG_fl = Ellipse_TG()
+
     TG_fr = Ellipse_TG()
+    TG_fr.phase = TG_fr.cycle_length/2
+
     TG_rl = Ellipse_TG()
+    TG_rl.phase = TG_rl.cycle_length/2
+
     TG_rr = Ellipse_TG()
-    
-    tg_arr = [TG_fl,TG_fr,TG_rl,TG_rr]
+
+    tg_arr = [TG_fl, TG_fr, TG_rl, TG_rr]
 
     print("seed = ", hp.seed)
     np.random.seed(hp.seed)
@@ -309,8 +346,10 @@ if __name__ == "__main__":
     # number of inputs: number of columns
     # number of outputs: number of rows
     n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
-    n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
-    
+    # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
+    # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
+    n_outputs = 8 + TG_fl.n_params*4
+
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
 
