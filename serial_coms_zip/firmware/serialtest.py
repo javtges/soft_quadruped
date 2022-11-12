@@ -36,7 +36,7 @@ def send_frame(command, data, reply_length = 0, port_id = None):
 	    frame = frame + bytearray.fromhex("00") # add checksum
 	    frame = frame + END_BYTE
 	    
-	    print(frame)
+	    print("frame", frame)
 	    teensy.write(frame)
 	    if reply_length != 0:
 	        return [True, teensy.read(reply_length)]
@@ -70,7 +70,7 @@ def set_servos(angles, port_id = None):
         message[i] =  angles[i]
     send_frame(COMMAND_SERVO, message, port_id = port_id)   
 
-<<<<<<< HEAD
+# <<<<<<< HEAD
 set_light(True)
 time.sleep(2)
 set_light(False)

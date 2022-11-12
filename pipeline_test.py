@@ -53,15 +53,15 @@ else:
 
 #########################################
 
-imu_data = []
-tag_xyz_data= []
-p_count = 16
-# params = np.ones((p_count,))*90 # Our initial parameter vector pi
-params = np.random.randint(181, size=16)
-# params = np.array([0, 180, 180, 0, 0, 180, 0, 180, 0, 180, 180, 0, 0, 180, 0, 180]) # Our initial parameter vector pi
-t = 10
-eps = 15
-step_size = 5
+# imu_data = []
+# tag_xyz_data= []
+# p_count = 16
+# # params = np.ones((p_count,))*90 # Our initial parameter vector pi
+# params = np.random.randint(181, size=16)
+# # params = np.array([0, 180, 180, 0, 0, 180, 0, 180, 0, 180, 180, 0, 0, 180, 0, 180]) # Our initial parameter vector pi
+# t = 10
+# eps = 15
+# step_size = 5
 now = datetime.now().strftime("%y%m%d_%H%M%S")
 
 ##########################################
@@ -92,15 +92,15 @@ def send_policy(policy):
     ser.write(str_policy.encode())
 
 
-def make_policies(params, eps):
-    R_list = np.zeros((t,p_count))
-    eps_list = np.zeros((t,p_count))
-    for row in range(t):
-        e = np.random.choice([-eps,0,eps], 16)
-        eps_list[row][:] = e
-        R_list[row][:] = e + params
+# def make_policies(params, eps):
+#     R_list = np.zeros((t,p_count))
+#     eps_list = np.zeros((t,p_count))
+#     for row in range(t):
+#         e = np.random.choice([-eps,0,eps], 16)
+#         eps_list[row][:] = e
+#         R_list[row][:] = e + params
 
-    return R_list, eps_list
+#     return R_list, eps_list
 
 def eval_reward(tag_xyz_data, times, params):
     # print("Eval reward", tag_xyz_data)
@@ -131,9 +131,12 @@ def eval_reward(tag_xyz_data, times, params):
     return distance
 
 # Start streaming
-cfg = pipeline.start(config)
-profile = cfg.get_stream(rs.stream.color)
-intr = profile.as_video_stream_profile().get_intrinsics()
+
+# cfg = pipeline.start(config)
+# profile = cfg.get_stream(rs.stream.color)
+# intr = profile.as_video_stream_profile().get_intrinsics()
+
+
 print(intr)
 pause_flag = 0
 tag_xyz = np.zeros((3,1))

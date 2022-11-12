@@ -110,8 +110,8 @@ class Ellipse_TG():
         return eps_list, theta_list
 
     def joints_to_xy_legframe(self, theta, eps):
-        x = (0.05+eps)*np.sin(theta)
-        y = -(0.05+eps)*np.cos(theta)
+        x = (0.07+eps)*np.sin(theta)
+        y = -(0.07+eps)*np.cos(theta)
         return x, y
 
     def xy_legframe_to_joints(self, x, y):
@@ -126,10 +126,10 @@ class Ellipse_TG():
 
     def legframe_to_footframe(self, x, y):
         x_foot = x
-        y_foot = y+0.05
+        y_foot = y+0.07
         return x_foot, y_foot
 
-    def step_traj(self, width, height, res_x, res_y):
+    def step_traj(self, width, height, res_x, res_y, step_theta=True, step_time=None):
         '''
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
@@ -144,11 +144,17 @@ class Ellipse_TG():
 
         # print(eps.shape, theta.shape)
         # print("phase:", self.phase)
+        
+        if step_time:
+            self.phase = int(step_time * self.cycle_length)
+        
         ep_out = eps[int(self.phase)]
         theta_out = theta[int(self.phase)]
-        self.phase += 1
-        if self.phase == self.cycle_length:
-            self.phase = 0
+        
+        if step_theta:
+            self.phase += 1
+            if self.phase == self.cycle_length:
+                self.phase = 0
 
         return ep_out, theta_out
 
@@ -156,13 +162,13 @@ class Ellipse_TG():
 class Hp():
 
     def __init__(self):
-        self.nb_steps = 10000
+        self.nb_steps = 500
         self.episode_length = 1000
         self.learning_rate = 0.02
         self.nb_directions = 16
         self.nb_best_directions = 8
         assert self.nb_best_directions <= self.nb_directions
-        self.noise = 0.03
+        self.noise = 0.01
         self.seed = 42
         self.env_name = 'hsa_robot-v0'
 
@@ -190,7 +196,7 @@ class Normalizer():
 
 class Policy():
 
-    def __init__(self, input_size, output_size, env_name, traj_generator, args):
+    def __init__(self, input_size, output_size, env_name, traj_generator, args=None):
 
         # self.tg_AC = Ellipse_TG()
         # self.tg_BC = Ellipse_TG()
@@ -201,6 +207,8 @@ class Policy():
         except:
             self.theta = np.zeros((output_size, input_size))
         self.env_name = env_name
+        self.input_size = input_size
+        self.output_size = output_size
         print("Starting policy theta=", self.theta)
         print("Policy size=", self.theta.shape)
 
@@ -313,6 +321,8 @@ def train(env, policy, normalizer, hp, traj_generators, args):
         reward_evaluation = explore(
             env, normalizer, policy, None, None, hp, traj_generators)
         print('Step:', step, 'Reward:', reward_evaluation)
+        if reward_evaluation > 0.0107:
+            np.save("test.npy", policy.theta)
 
 
 if __name__ == "__main__":
