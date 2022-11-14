@@ -5,6 +5,7 @@ import numpy as np
 import yaml
 import time
 import readchar
+import gym
 import struct
 import csv
 from datetime import datetime
@@ -238,8 +239,8 @@ if __name__ == "__main__":
 
     tg_arr = [TG_fl, TG_fr, TG_rl, TG_rr]
 
-    print("seed = ", hp.seed)
-    np.random.seed(hp.seed)
+    # print("seed = ", hp.seed)
+    np.random.seed(42)
 
     # make the environment
     env = gym.make("hsa_robot-v0")
@@ -297,65 +298,79 @@ if __name__ == "__main__":
             tag_buffer.append(tag_xyz)
             time_buffer.append(time.time() - starttime)
             
-        # Make a measurement in the format of the environment's observation space
-        # observation = np.zeros((policy.output_size,))
-        
-        if len(tag_buffer) > 5:
-            velocity = (tag_buffer[-1] - tag_buffer[-4]) / (time_buffer[-1], time_buffer[-4])
-        else:
-            velocity = np.array([0,0,0])
-        
-        
-        state = np.array([tag_xyz[0], tag_xyz[1], np.cos(euler[0]), np.sin(euler[0]), velocity[0], velocity[1]]) # MAKE THIS THE POS, ORI, VEL
-        
-        # How to calculate velocity? Maybe: use the last N observations to find it rather than a single one
-        
-        # Evaluate the policy to get an action
-        
-        # print(traj_generators[0].width)
-        tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
-                              traj_generators[1].width, traj_generators[1].height,
-                              traj_generators[2].width, traj_generators[2].height,
-                              traj_generators[3].width, traj_generators[3].height], dtype=float)
-        state = np.concatenate((state, tg_params), axis=0)
-        # print(state)
-        # Augment this to include the variables we need from the TG
-        
-        normalizer.observe(state)
-        state = normalizer.normalize(state)
-        action = policy.evaluate(state, delta=None, direction=None, hp=None)
-        
-        time_delta = time_buffer[-1] - time_buffer[-2]
-        
-        # print("leg1")
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=action[0], height=action[1], res_x=action[2], res_y=action[3], step_time=time_delta)
-        # print("leg2")
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=action[4], height=action[5], res_x=action[6], res_y=action[7], step_time=time_delta)
-        # print("leg3")
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=action[8], height=action[9], res_x=action[10], res_y=action[11], step_time=time_delta)
-        # print("leg4")
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=action[12], height=action[13], res_x=action[14], res_y=action[15], step_time=time_delta)
+            # Make a measurement in the format of the environment's observation space
+            # observation = np.zeros((policy.output_size,))
+            
+            if len(tag_buffer) > 5:
+                # print("buffers?", (tag_buffer[-1] - tag_buffer[-4]))
+                # print("buffer dem", (time_buffer[-1] - time_buffer[-4]))
+                velocity = (tag_buffer[-1] - tag_buffer[-4]) / (time_buffer[-1] - time_buffer[-4])
+                velocity = velocity.T[0]
+                time_delta = time_buffer[-1] - time_buffer[-2]
+            else:
+                velocity = np.array([0,0,0])
+                time_delta = 1/30
+                
+            print("velocity", velocity)
+            
+            state = np.array([tag_xyz[0][0], tag_xyz[1][0], np.cos(euler[0]), np.sin(euler[0]), velocity[0], velocity[1]]) # MAKE THIS THE POS, ORI, VEL
+            
+            # How to calculate velocity? Maybe: use the last N observations to find it rather than a single one
+            
+            # Evaluate the policy to get an action
+            
+            # print(traj_generators[0].width)
+            # print("test?", tg_arr[3].width)
+            # print("euler", euler[0])
+            # print("sin", np.sin(euler[0]))
+            # print("velocity", velocity[0], velocity[1])
+            
+            tg_params = np.array([tg_arr[0].width, tg_arr[0].height,
+                                tg_arr[1].width, tg_arr[1].height,
+                                tg_arr[2].width, tg_arr[2].height,
+                                tg_arr[3].width, tg_arr[3].height], dtype=float)
+            state = np.concatenate((state, tg_params), axis=0)
+            # print("STATE BEFORE", state)
+            # Augment this to include the variables we need from the TG
+            
+            
+            # Uncomment and fix this later
+            normalizer.observe(state)
+            state = normalizer.normalize(state)
+            # print("STATE AFTER", state)
+            action = policy.evaluate(input=state, delta=None, direction=None, hp=None)
+            
+            
+            
+            # print("leg1")
+            eps_fl, theta_fl = tg_arr[0].step_traj(width=action[0], height=action[1], res_x=action[2], res_y=action[3], step_time=time_delta)
+            # print("leg2")
+            eps_fr, theta_fr = tg_arr[1].step_traj(width=action[4], height=action[5], res_x=action[6], res_y=action[7], step_time=time_delta)
+            # print("leg3")
+            eps_rl, theta_rl = tg_arr[2].step_traj(width=action[8], height=action[9], res_x=action[10], res_y=action[11], step_time=time_delta)
+            # print("leg4")
+            eps_rr, theta_rr = tg_arr[3].step_traj(width=action[12], height=action[13], res_x=action[14], res_y=action[15], step_time=time_delta)
 
-        # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
+            # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
-        # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
-        # Sample from all 4 trajectory generators, make an action from all of them
-        # print(aaaaaaaaa)
+            # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
+            # Sample from all 4 trajectory generators, make an action from all of them
+            # print(aaaaaaaaa)
 
-        # Make sure that the order of legs here is correct
-        actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
-        
-        # Convert eps and theta to XY, then to motor commands
-        x_fl, y_fl = traj_generators[0].joints_to_xy_legframe(theta_fl, eps_fl)
-        x_fr, y_fr = traj_generators[1].joints_to_xy_legframe(theta_fr, eps_fr)
-        x_rl, y_rl = traj_generators[2].joints_to_xy_legframe(theta_rl, eps_rl)
-        x_rr, y_rr = traj_generators[3].joints_to_xy_legframe(theta_rr, eps_rr)
-        
-        n1_fl, n2_fl = lut.interpolate_with_xy(x_fl, y_fl)
-        n1_fr, n2_fr = lut.interpolate_with_xy(x_fr, y_fr)
-        n1_rl, n2_rl = lut.interpolate_with_xy(x_rl, y_rl)
-        n1_rr, n2_rr = lut.interpolate_with_xy(x_rr, y_rr)
-        
-        
-        # This is wrong, fix it
-        send_policy([n1_fl, n2_fl, n1_fr, n2_fr, n1_rl, n2_rl, n2_rr, n2_rr])
+            # Make sure that the order of legs here is correct
+            actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
+            
+            # Convert eps and theta to XY, then to motor commands
+            x_fl, y_fl = tg_arr[0].joints_to_xy_legframe(theta_fl, eps_fl)
+            x_fr, y_fr = tg_arr[1].joints_to_xy_legframe(theta_fr, eps_fr)
+            x_rl, y_rl = tg_arr[2].joints_to_xy_legframe(theta_rl, eps_rl)
+            x_rr, y_rr = tg_arr[3].joints_to_xy_legframe(theta_rr, eps_rr)
+            
+            n1_fl, n2_fl = lut.interpolate_with_xy(x_fl, y_fl)
+            n1_fr, n2_fr = lut.interpolate_with_xy(x_fr, y_fr)
+            n1_rl, n2_rl = lut.interpolate_with_xy(x_rl, y_rl)
+            n1_rr, n2_rr = lut.interpolate_with_xy(x_rr, y_rr)
+            
+            
+            # This is wrong, fix it
+            send_policy([n1_fl, n2_fl, n1_fr, n2_fr, n1_rl, n2_rl, n2_rr, n2_rr])
