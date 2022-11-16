@@ -42,6 +42,7 @@ import numpy as np
 import os
 import inspect
 import gym_hsa_robot
+
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(os.path.dirname(currentdir))
@@ -287,7 +288,10 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # Make sure that the order of legs here is correct
         actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
+        # env.render()
+        # print(num_plays)
         state, reward, done, _ = env.step(actions_tg)
+        # print(done)
         reward = max(min(reward, 1), -1)
         sum_rewards += reward
         num_plays += 1

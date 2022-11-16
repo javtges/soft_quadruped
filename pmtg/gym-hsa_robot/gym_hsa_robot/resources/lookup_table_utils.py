@@ -44,5 +44,6 @@ class LookupTable:
         return n1, n2
     
     
+if __name__ == '__main__':
     
-a = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
+    a = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')

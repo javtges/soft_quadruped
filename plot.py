@@ -9,17 +9,25 @@ data = []
 
 # '../trial_220930_134147_opt_start'
 # trial_220930_135226_rand_start
-with open('../trial_220930_134147_opt_start') as f:
-    reader = csv.reader(f, delimiter=',')
-    for row in reader:
-        # data.append(row)
-        reward.append(row[16])
-    
+# with open('../trial_220930_134147_opt_start') as f:
+#     reader = csv.reader(f, delimiter=',')
+#     for row in reader:
+#         # data.append(row)
+#         reward.append(row[16])
+
+
+reward = [1.2710180966319349,1.6855985432324943,1.294745653883418,1.2894853166763618,1.3767319388230006,
+1.2847467181323577,1.3479708784455608,1.7991953958307487,1.301582008799117,-9.294636177507812,2.731729384165109,
+2.200361534130714,1.518818053783918,0.3615341843762892,1.8039964221143736,4.7792369709228915,5.250834539789632,
+3.6700289805060375,3.604720732467295,14.288503139386188,6.466682112552191,12.212760380508893,1.2389021376076161,
+15.299518970632015,1.8459098807442724,5.324042845456088,17.31256873553398,1.2772275242038653,3.3986512687342425,
+5.1396203926626285,1.5307981269031836,7.122630721736192,7.080145755442392,1.198252020586312,16.602873269419458]    
+
 x_values = np.arange(len(reward))
 reward = [float(x) for x in reward]
 print(reward)
 plt.plot(x_values, reward)
-plt.yticks(np.arange(0, 0.01, step=0.001))
+# plt.yticks(np.arange(0, 0.01, step=0.001))
 plt.title('Hand-Tuned Gait Starting Vector')
 plt.xlabel("Trial Number")
 plt.ylabel("Speed in m/s")
