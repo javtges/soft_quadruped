@@ -182,7 +182,7 @@ class Normalizer():
         self.var = np.zeros(nb_inputs)
 
     def observe(self, x):
-        print(self.mean, x)
+        # print(self.mean, x)
         self.n += 1.
         last_mean = self.mean.copy()
         self.mean += (x - self.mean) / self.n
@@ -215,13 +215,13 @@ class Policy():
 
     def evaluate(self, input, delta, direction, hp):
         if direction is None:
-            print(self.theta.shape)
-            print(self.theta)
-            print(input.shape)
-            print(input)
+            # print(self.theta.shape)
+            # print(self.theta)
+            # print(input.shape)
+            # print(input)
             test = np.dot(self.theta, input)
-            print(test.shape)
-            print(test)
+            # print(test.shape)
+            # print(test)
             out_arr = np.clip(test, -1.0, 1.0)
             return  out_arr # Verify that this has the same behavior as the function below
         elif direction == "positive":

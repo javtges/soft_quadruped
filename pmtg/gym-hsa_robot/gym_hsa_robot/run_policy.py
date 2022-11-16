@@ -25,9 +25,9 @@ at_detector = Detector(families='tag36h11',
                        debug=0)
 
 try:
-    ser = serial.Serial('/dev/ttyACM1',115200,rtscts=1)
+    ser = serial.Serial('/dev/ttyACM1',115200,timeout=0.1)
 except:                      
-    ser = serial.Serial('/dev/ttyACM0',115200,rtscts=1)
+    ser = serial.Serial('/dev/ttyACM0',115200,timeout=0.1)
 
 print('Opening port: ')
 print(ser.name)
@@ -374,3 +374,4 @@ if __name__ == "__main__":
             
             # This is wrong, fix it
             send_policy([n1_fl, n2_fl, n1_fr, n2_fr, n1_rl, n2_rl, n2_rr, n2_rr])
+            time.sleep(0.1)
