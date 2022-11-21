@@ -19,8 +19,8 @@ class LookupTable:
         
         self.data = genfromtxt(lookup_table_filename, delimiter=',')
         print(self.data.shape)
-        self.num1 = self.data[:,0]
-        self.num2 = self.data[:,2]
+        self.num1 = self.data[:,0] # this should be X 
+        self.num2 = self.data[:,2] # this should be Z
         self.x = self.data[:,4]
         self.y = self.data[:,6]
         
@@ -28,6 +28,10 @@ class LookupTable:
         self.interp_y = NearestNDInterpolator(list(zip(self.num1, self.num2)), self.y)
         self.interp_num1 = NearestNDInterpolator(list(zip(self.x, self.y)), self.num1)
         self.interp_num2 = NearestNDInterpolator(list(zip(self.x, self.y)), self.num2)
+        
+        self.width = np.max(self.x) - np.min(self.x)
+        self.height = np.max(self.y) - np.min(self.y)
+        print(self.width)
         # print(self.interp_x(111, 129))
         
         
@@ -87,18 +91,27 @@ class LookupTable:
             distances = np.sqrt( np.square(self.x - x[idx]), np.square(self.y - y[idx]))
             n = np.argpartition(distances, 2)[:2]
             
+            
+            print("point 3", x[idx], y[idx])
             x1 = self.x[n[0]]
             y1 = self.y[n[0]]
+            
+            print("point 1", x1, y1)
             x2 = self.x[n[1]]
             y2 = self.y[n[1]]
             
+            print("point 2", x2, y2)
+            
             n1_1 = self.num1[n[0]]
             n2_1 = self.num2[n[0]]
+            print("numbers_p1", n1_1, n2_1)
+            
             n1_2 = self.num1[n[1]]
             n2_2 = self.num2[n[1]]
+            print("numbers_p2", n1_2, n2_2)
             
-            diff_n1 = n2_1 - n1_1
-            diff_n2 = n2_2 - n1_2
+            diff_n1 = n1_2 - n1_1
+            diff_n2 = n2_2 - n2_1
             
             # One suggestion here is to average the two numbers
             # n1a = (n1_1 + n2_1)/2
@@ -108,13 +121,18 @@ class LookupTable:
             # the distance along the line
             
             x4, y4 = self.p((x1,y1), (x2,y2), (x[idx],y[idx]))
+            
+            print("point 4", x4, y4)
             t = self.percent_along_line((x1,y1), (x2,y2), (x4,y4))
             
-            n1a = n1_1 + t * diff_n1
-            n2a = n2_1 + t * diff_n2
+            print("T?", t)
+            
+            n1a = np.clip(int(n1_1 + t * diff_n1),0,180)
+            n2a = np.clip(int(n2_1 + t * diff_n2),0,180)
             
             n1.append(n1a)
             n2.append(n2a)
+            print("n1, n2", n1a, n2a)
             
         n1 = np.asarray(n1)
         n2 = np.asarray(n2)
