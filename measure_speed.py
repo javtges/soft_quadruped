@@ -10,12 +10,14 @@ import cv2
 import pyrealsense2 as rs
 import numpy as np
 import yaml
+import csv
 import time
 import readchar
 import threading
 from pupil_apriltags import Detector
 import argparse
 import modern_robotics as mr
+from datetime import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument('filename', help='output file name')
@@ -23,7 +25,7 @@ args = parser.parse_args()
 
 filename = args.filename
 now = datetime.now().strftime("%y%m%d_%H%M%S")
-filename = filename + now + ".csv"
+filename = filename + "_" + now + ".csv"
 
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
@@ -73,7 +75,7 @@ def start_csv(filename):
     with open(n, 'a') as f:
         writer = csv.writer(f)
         t = datetime.now().strftime("%y%m%d_%H%M%S")
-        writer.writerow(['motor1', 'motor2', 'motor3', 'motor4', 'leg_trans_x', 'leg_trans_y', 'leg_trans_z', 'R_0_0', 'R_0_1', 'R_0_2', 'R_1_0', 'R_1_1', 'R_1_2','R_2_0', 'R_2_1', 'R_2_2', t])
+        # writer.writerow(['motor1', 'motor2', 'motor3', 'motor4', 'leg_trans_x', 'leg_trans_y', 'leg_trans_z', 'R_0_0', 'R_0_1', 'R_0_2', 'R_1_0', 'R_1_1', 'R_1_2','R_2_0', 'R_2_1', 'R_2_2', t])
 
 def write_csv(filename, R):
     n = filename
