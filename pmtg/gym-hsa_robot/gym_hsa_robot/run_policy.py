@@ -374,4 +374,6 @@ if __name__ == "__main__":
             
             # This is wrong, fix it
             send_policy([n1_fl, n2_fl, n1_fr, n2_fr, n1_rl, n2_rl, n2_rr, n2_rr])
+            
+            # Change this so that it sleeps the right amount of time to send commands every 0.1s
             time.sleep(0.1)

@@ -138,6 +138,7 @@ class Ellipse_TG():
         x = np.asarray(x) + res_x
         y = np.asarray(y) + res_y
         
+        
         # for idx, val in enumerate(x):
         #     eps, theta = self.xy_legframe_to_joints(x[idx], y[idx])
             
@@ -148,6 +149,9 @@ class Ellipse_TG():
         
         if step_time:
             self.phase = int(step_time * self.cycle_length)
+            
+        if self.phase > self.cycle_length:
+            self.phase = self.phase - self.cycle_length
         
         ep_out = eps[int(self.phase)]
         theta_out = theta[int(self.phase)]
@@ -300,6 +304,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
 
 def train(env, policy, normalizer, hp, traj_generators, args):
 
+    reward_max = 0
     for step in range(hp.nb_steps):
 
         deltas = policy.sample_deltas()
@@ -336,8 +341,9 @@ def train(env, policy, normalizer, hp, traj_generators, args):
         reward_evaluation = explore(
             env, normalizer, policy, None, None, hp, traj_generators)
         print('Step:', step, 'Reward:', reward_evaluation)
-        if reward_evaluation > 0.0107:
+        if reward_evaluation > reward_max:
             np.save("test.npy", policy.theta)
+            print("New maximum reward!")
 
 
 if __name__ == "__main__":

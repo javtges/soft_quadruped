@@ -17,7 +17,7 @@ env.reset()
 
 # print(ac_theta)
 
-x,y = make_circle(0, -0.05, 0.02, 0.02, 240)
+x,y = make_circle(0, -0.07, 0.02, 0.02, 240)
 ac_eps = []
 ac_theta = []
 

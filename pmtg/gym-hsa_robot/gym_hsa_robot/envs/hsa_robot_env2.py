@@ -20,8 +20,8 @@ class HSARobot_Env(gym.Env):
     
     def __init__(self):
         
-        # self.client = p.connect(p.GUI)
-        self.client = p.connect(p.DIRECT)
+        self.client = p.connect(p.GUI)
+        # self.client = p.connect(p.DIRECT)
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
@@ -54,9 +54,9 @@ class HSARobot_Env(gym.Env):
         # Done by running off boundaries
 
         # Done by reaching goal
-        if reward > 0.1:
-            self.done = True
-            reward = 50
+        # if reward > 0.1:
+        #     self.done = True
+        #     reward = 50
         
 
         ob = np.array(robot_ob, dtype=np.float32)
