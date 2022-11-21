@@ -157,7 +157,7 @@ while(True):
     else:
         print("No tag!")
     
-    if data == [180, 180]:        
+    if data == [180, 40]:        
         lut_count += 1
         start_csv(lut_count, filename)
             

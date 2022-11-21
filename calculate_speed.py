@@ -15,13 +15,14 @@ x = data[:,4] # this should be X
 y = data[:,5] # this should be Y
 z = data[:,6] # this should be Z in the camera frame (Y in the planar frame)
 time = data[:,-1]
-elapsed = time[-1] - time[0]
+elapsed = time[-1] - time[1]
 
 # print(x[-1], y[-1], x[1], y[1])
 dX = x[-1] - x[1]
 dY = y[-1] - y[1]
 
 print("X and Y distance traveled:", dX, dY)
+print("Time elapsed:", elapsed)
 
 speed = np.sqrt(dX*dX + dY*dY) / elapsed
 print("Speed in m/s:", speed)

@@ -7,10 +7,11 @@ import pandas as pd
 
 # filename_default = "table_221018_154600_"
 # filename_default = "table_221107_212842_"
-filename_default = "/home/james/final_project/src/pmtg/gym-hsa_robot/gym_hsa_robot/resources/table_221109_223329_"
+# filename_default = "/home/james/final_project/src/pmtg/gym-hsa_robot/gym_hsa_robot/resources/table_221109_223329_"
+filename_default = "table_221121_142312__no_reset_"
 
 num = 0
-num_max = 1
+num_max = 13
 
 x_list = []
 z_list = []
@@ -41,8 +42,8 @@ fig, ax = plt.subplots()
 def animate(i):
     fig.clear()
     ax = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-0.005, 0.005), ylim=(-0.005, 0.005))
-    ax.set_xlim(-0.005,0.005)
-    ax.set_ylim(-0.005,0.005)
+    ax.set_xlim(-0.02,0.02)
+    ax.set_ylim(-0.02,0.02)
     ax.grid(b=None)
     ax.set_xlabel('x [m]')
     ax.set_ylabel('y [m]')
@@ -54,7 +55,7 @@ def animate(i):
 ani = animation.FuncAnimation(fig, animate, interval=1000, frames=range(num_max))
 
 # FFwriter = animation.FFMpegWriter(fps=3)
-ani.save('animation_with_reset_xz.gif', writer='pillow')
+ani.save('22_11_21_with_reset_xz_newservo.gif', writer='pillow')
 
 
     

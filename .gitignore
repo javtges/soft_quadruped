@@ -136,3 +136,4 @@ pmtg/gym-hsa_robot/gym_hsa_robot/exp_hsa_test/
 *var.txt
 *weights.txt
 *.javtges
+*.csv
