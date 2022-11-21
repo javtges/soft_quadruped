@@ -19,10 +19,10 @@ class LookupTable:
         
         self.data = genfromtxt(lookup_table_filename, delimiter=',')
         print(self.data.shape)
-        self.num1 = self.data[:,0] # this should be X 
-        self.num2 = self.data[:,2] # this should be Z
-        self.x = self.data[:,4]
-        self.y = self.data[:,6]
+        self.num1 = self.data[:,0]  
+        self.num2 = self.data[:,2] 
+        self.x = self.data[:,4] # this should be X
+        self.y = self.data[:,6] # this should be Z in the camera frame (Y in the planar frame)
         
         self.x_avg = np.average(self.x)
         self.y_avg = np.average(self.y)
@@ -47,11 +47,7 @@ class LookupTable:
         self.eps = maxh-minh
         
         self.theta = np.arctan(0.5*self.width / 0.07)
-        
-        # print(self.width)
-        # print(self.height)
                 
-        
         
     def interpolate_with_motor_values(self, b1, b2):
         x = self.interp_x(b1, b2)
