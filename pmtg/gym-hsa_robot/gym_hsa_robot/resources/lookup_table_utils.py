@@ -24,16 +24,33 @@ class LookupTable:
         self.x = self.data[:,4]
         self.y = self.data[:,6]
         
+        self.x_avg = np.average(self.x)
+        self.y_avg = np.average(self.y)
+        
         self.interp_x = NearestNDInterpolator(list(zip(self.num1, self.num2)), self.x)
         self.interp_y = NearestNDInterpolator(list(zip(self.num1, self.num2)), self.y)
         self.interp_num1 = NearestNDInterpolator(list(zip(self.x, self.y)), self.num1)
         self.interp_num2 = NearestNDInterpolator(list(zip(self.x, self.y)), self.num2)
         
         self.width = np.max(self.x) - np.min(self.x)
-        self.height = np.max(self.y) - np.min(self.y)
-        print(self.width)
-        # print(self.interp_x(111, 129))
+        minh = 0
+        maxh = 0
+        for idx , val in enumerate(self.x):
+            if abs(val) > 0.002:
+                pass
+            else:
+                if self.y[idx] > maxh:
+                    maxh = self.y[idx]
+                if self.y[idx] < minh:
+                    minh = self.y[idx]
+
+        self.eps = maxh-minh
         
+        self.theta = np.arctan(0.5*self.width / 0.07)
+        
+        # print(self.width)
+        # print(self.height)
+                
         
         
     def interpolate_with_motor_values(self, b1, b2):
