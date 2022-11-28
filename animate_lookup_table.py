@@ -2,6 +2,7 @@ import matplotlib.animation as animation
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.offsetbox import AnchoredText
 import csv
 import pandas as pd
 
@@ -17,6 +18,8 @@ num_max = 13
 x_list = []
 z_list = []
 y_list = []
+n1_list = []
+n2_list = []
 
 for i in range(num_max):
     filename = filename_default + str(i)
@@ -26,6 +29,9 @@ for i in range(num_max):
     x = data[:,4] # this should be X
     y = data[:,5] # this should be Y
     z = data[:,6] # this should be Z in the camera frame (Y in the planar frame)
+    
+    n1 = data[:,0]
+    n2 = data[:,2]
     # data = data[1:][:]
     # print(data.shape)
     
@@ -35,10 +41,14 @@ for i in range(num_max):
     x = x.tolist()
     y = y.tolist()
     z = z.tolist()
+    n1 = n1.tolist()
+    n2 = n2.tolist()
 
     x_list += x
     y_list += y
     z_list += z
+    n1_list += n1
+    n2_list += n2
     # x_list.append(x)
     # y_list.append(y)
     # z_list.append(z)
@@ -68,7 +78,7 @@ def animate(i):
 fig, ax = plt.subplots()
 ax.set_xlabel('X Axis', size = 12)
 ax.set_ylabel('Y Axis', size = 12)
-ax.axis([-0.02,0.02,-0.01,0.01])
+ax.axis([-0.02,0.02,-0.005,0.01])
 x_vals = []
 y_vals = []
 intensity = []
@@ -84,15 +94,17 @@ scatter = ax.scatter(x_vals,y_vals, c=[], cmap=cmap, vmin=0,vmax=1)
 def get_new_vals():
     global n
     x = x_list[n]
-    y = z_list[n]
+    y = z_list[n] * -1
+    n1 = n1_list[n]
+    n2 = n2_list[n]
     n += 1
     # print(x, y)
-    return x, y
+    return x, y, n1, n2
 
 def update(t):
     global x_vals, y_vals, intensity
     # Get intermediate points
-    new_xvals, new_yvals = get_new_vals()
+    new_xvals, new_yvals, new_n1, new_n2 = get_new_vals()
     # print(new_xvals, new_yvals)
     x_vals = np.append(x_vals,[new_xvals])
     y_vals = np.append(y_vals,[new_yvals])
@@ -106,10 +118,19 @@ def update(t):
 
     # Set title
     ax.set_title('Time: %0.3f' %t)
+    while ax.artists != []:
+        ax.artists[0].remove()
+    textname = "M: " + str(new_n1) + "\nN: " + str(new_n2)
+    at = AnchoredText(
+        textname, prop=dict(size=15), frameon=False, loc='upper left')
+    at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(at)
+     
+    
+
 
 ani = animation.FuncAnimation(fig, update, frames=t_vals,interval=50)
 filename_out = filename + "points.gif"
-ani.save(filename_out, writer='pillow')
-
+# ani.save(filename_out, writer='imagemagick')
 
 plt.show()

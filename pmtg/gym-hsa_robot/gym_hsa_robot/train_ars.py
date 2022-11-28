@@ -135,8 +135,8 @@ class Ellipse_TG():
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
         x, y = self.make_circle(0.0, -0.07, width, height, self.cycle_length)
-        x = np.asarray(x) + res_x
-        y = np.asarray(y) + res_y
+        x = np.asarray(x) #+ res_x
+        y = np.asarray(y) #+ res_y
         
         
         # for idx, val in enumerate(x):
@@ -153,8 +153,9 @@ class Ellipse_TG():
         if self.phase > self.cycle_length:
             self.phase = self.phase - self.cycle_length
         
-        ep_out = eps[int(self.phase)]
-        theta_out = theta[int(self.phase)]
+        ep_out = eps[int(self.phase)] # here, we add residual
+        theta_out = theta[int(self.phase)] # here we add residual
+        # print(self.phase)
         
         if step_theta:
             self.phase += 1
@@ -173,7 +174,7 @@ class Hp():
         self.nb_directions = 16
         self.nb_best_directions = 8
         assert self.nb_best_directions <= self.nb_directions
-        self.noise = 0.01
+        self.noise = 0.0 # previously 0.01
         self.seed = 42
         self.env_name = 'hsa_robot-v0'
 
