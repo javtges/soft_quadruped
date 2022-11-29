@@ -12,8 +12,8 @@ class HSARobot:
         robot_start_pos = [0,0,0.2]
         self.robot = p.loadURDF(fileName=f_name, basePosition=robot_start_pos)
         
-        self.leg_joints = [1, 3, 5, 7]
-        self.foot_joints = [2, 4, 6, 8]
+        self.leg_joints = [1, 3, 5, 7] # This is theta
+        self.foot_joints = [2, 4, 6, 8] # This is epsilon
         
         self.friction = 0.8
         
@@ -29,19 +29,21 @@ class HSARobot:
         
         # May want to change this to get rid of the 0th index
         
-        leg_positions = [action[1], action[3], action[5], action[7]]
-        foot_positions = [action[2], action[4], action[6], action[8]]
+        # THIS MIGHT BE THE PROBLEM
+        
+        leg_positions_theta = [action[1], action[3], action[5], action[7]]
+        foot_positions_eps = [action[2], action[4], action[6], action[8]]
         
         p.setJointMotorControlArray(self.robot, self.leg_joints,
                                     controlMode=p.POSITION_CONTROL,
-                                    targetPositions=leg_positions,
-                                    forces=[5,5,5,5],
+                                    targetPositions=leg_positions_theta,
+                                    forces=[50,50,50,50],
                                     physicsClientId=self.client)
         
         p.setJointMotorControlArray(self.robot, self.foot_joints,
                                     controlMode=p.POSITION_CONTROL,
-                                    targetPositions=foot_positions,
-                                    forces=[5,5,5,5],
+                                    targetPositions=foot_positions_eps,
+                                    forces=[50,50,50,50],
                                     physicsClientId=self.client)
         
         # p.setJointMotorControl2(self.robot, jointIndex=2, controlMode=p.POSITION_CONTROL, targetPosition=-0.02, force=10)

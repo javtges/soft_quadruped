@@ -89,7 +89,7 @@ class Ellipse_TG():
             
         theta, eps = self.xy_legframe_to_joints(x, y)
 
-        # print(eps.shape, theta.shape)
+        
         # print("phase:", self.phase)
         
         if step_time:
@@ -132,7 +132,7 @@ if __name__ == '__main__':
             eps_rl, theta_rl = traj_generators[2].step_traj(width=0.02, height=0.02)
             # print("leg4")
             eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.02)
-
+            print(eps_fl, theta_fl)
             
             action = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
             observation, reward, done, info = env.step(action)
@@ -141,4 +141,4 @@ if __name__ == '__main__':
             # plt.show(a)
             
             # print(observation)
-            print(traj_generators[0].phase)
+            # print(traj_generators[0].phase)

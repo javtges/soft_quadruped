@@ -19,7 +19,7 @@
 	<xacro:property name="torso_width" value="0.14" />
     <xacro:property name="torso_height" value="0.16" />
     <xacro:property name="torso_depth" value="0.02" />
-    <xacro:property name="torso_mass" value="0.4" />
+    <xacro:property name="torso_mass" value="0.01" />
 
 	<xacro:property name="leg_length" value="0.4" />
 	<xacro:property name="leg_radius" value="0.025"/>
