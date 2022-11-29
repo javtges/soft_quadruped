@@ -47,11 +47,5 @@ while True:
         # fl_theta, fl_eps, fr_theta, fr_eps, rl_theta, rl_eps
         
         action = [0,ac_theta[i],ac_eps[i],bd_theta[i],bd_eps[i],bd_theta[i],bd_eps[i],ac_theta[i],ac_eps[i]]
-        # action = [0,0.02,ac_theta[i],0.02,bd_theta[i],0.02,bd_theta[i],0.02,ac_theta[i]]
-        # action = [0, 0, -0.02, 0, -0.02, 0, -0.02, 0, 0.02]
         observation, reward, done, info = env.step(action)
-        # time.sleep(1/240)
         env.render()
-        # plt.show(a)
-        # print(i)
-        # print(observation)

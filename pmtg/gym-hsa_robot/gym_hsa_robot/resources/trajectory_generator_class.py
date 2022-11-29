@@ -115,8 +115,13 @@ if __name__ == '__main__':
     env.reset()
     
     fl = Ellipse_TG()
+    
     fr = Ellipse_TG()
+    fr.phase = fr.cycle_length/2
+    
     rl = Ellipse_TG()
+    rl.phase = rl.cycle_length/2
+    
     rr = Ellipse_TG()
     traj_generators = [fl, fr, rl, rr]
     
@@ -134,9 +139,9 @@ if __name__ == '__main__':
             eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.02)
             print(eps_fl, theta_fl)
             
-            action = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
+            action = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
             observation, reward, done, info = env.step(action)
-            time.sleep(1/240)
+            # time.sleep(1/240)
             env.render()
             # plt.show(a)
             
