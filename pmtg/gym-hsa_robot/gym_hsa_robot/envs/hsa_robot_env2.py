@@ -27,7 +27,7 @@ class HSARobot_Env(gym.Env):
         # Here, define my action space and my observation space
         
         self.action_space = gym.spaces.Box(np.array([-0.01, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3]), np.array([0.01, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3]))
-        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -1, -1, -1000, -1000]), np.array([1000, 1000, 1, 1, 1000, 1000]))
+        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -1, -1, -1, -1000, -1000]), np.array([1000, 1000, 1, 1, 1, 1000, 1000]))
 
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = None

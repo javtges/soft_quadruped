@@ -63,8 +63,10 @@ class HSARobot:
         
         pos, ang = p.getBasePositionAndOrientation(self.robot, self.client)
         ang = p.getEulerFromQuaternion(ang)
-        ori = (math.cos(ang[2]), math.sin(ang[2]))
+        # print("ang", ang)
+        # ori = (math.cos(ang[2]), math.sin(ang[2])) # This is silly and we should't be doing this
         pos = pos[:2]
+        # ori = tuple(ang[2])
         # Get the velocity of the robot
         vel = p.getBaseVelocity(self.robot, self.client)[0][0:2]
         
@@ -73,7 +75,9 @@ class HSARobot:
         # print("pos", pos)
         # print("ori", ori)
         # print("vel", vel)
-        observation = (pos + ori + vel)
+        
+        # The observation is [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel]
+        observation = (pos + ang + vel)
 
         return observation
     

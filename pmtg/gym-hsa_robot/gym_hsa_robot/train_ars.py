@@ -174,7 +174,7 @@ class Hp():
         self.nb_directions = 16
         self.nb_best_directions = 8
         assert self.nb_best_directions <= self.nb_directions
-        self.noise = 0.0 # previously 0.01
+        self.noise = 0.01 # previously 0.01
         self.seed = 42
         self.env_name = 'hsa_robot-v0'
 
@@ -188,7 +188,7 @@ class Normalizer():
         self.var = np.zeros(nb_inputs)
 
     def observe(self, x):
-        # print(self.mean, x)
+        print(self.mean, x)
         self.n += 1.
         last_mean = self.mean.copy()
         self.mean += (x - self.mean) / self.n
@@ -259,7 +259,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     done = False
     num_plays = 0.
     sum_rewards = 0
-    while not done and num_plays < hp.episode_length:
+    while num_plays < hp.episode_length: # Formerly: "not done and" as an additional condition
 
         # print(traj_generators[0].width)
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
@@ -273,7 +273,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
 
-        # print(action)
+        print(action)
         
         # print("leg1")
         eps_fl, theta_fl = traj_generators[0].step_traj(width=action[0], height=action[1], res_x=action[2], res_y=action[3])
@@ -283,6 +283,11 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         eps_rl, theta_rl = traj_generators[2].step_traj(width=action[8], height=action[9], res_x=action[10], res_y=action[11])
         # print("leg4")
         eps_rr, theta_rr = traj_generators[3].step_traj(width=action[12], height=action[13], res_x=action[14], res_y=action[15])
+        
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.02, height=0.01, res_x=action[10], res_y=action[11])
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.01, res_x=action[14], res_y=action[15])
 
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
@@ -291,7 +296,9 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # print(aaaaaaaaa)
 
         # Make sure that the order of legs here is correct
-        actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
+        actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
+
+        # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
         # env.render()
         # print(num_plays)
@@ -374,6 +381,8 @@ if __name__ == "__main__":
 
     # make the environment
     env = gym.make("hsa_robot-v0")
+    
+    # print("AAA", env.observation_space.shape[0])
 
     # number of inputs: number of columns
     # number of outputs: number of rows
