@@ -20,14 +20,17 @@ class HSARobot_Env(gym.Env):
     
     def __init__(self):
         
-        # self.client = p.connect(p.GUI)
-        self.client = p.connect(p.DIRECT)
+        # if render:
+        #     self.client = p.connect(p.GUI)
+        # else:
+        #     self.client = p.connect(p.DIRECT)
+        self.client = p.connect(p.GUI)
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
         
-        self.action_space = gym.spaces.Box(np.array([-0.01, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3]), np.array([0.01, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3, 0.02, 0.3]))
-        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -1, -1, -1, -1000, -1000]), np.array([1000, 1000, 1, 1, 1, 1000, 1000]))
+        self.action_space = gym.spaces.Box(np.array([-0.01, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02]), np.array([0.01, 0.3, 0.02, 0.3, 0.03, 0.3, 0.02, 0.3, 0.02]))
+        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -3.15, -3.15, -3.15, -1000, -1000]), np.array([1000, 1000, 3.15, 3.15, 3.15, 1000, 1000]))
 
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = None
@@ -54,16 +57,15 @@ class HSARobot_Env(gym.Env):
         # What this should do is measure the distance between the last step and this one
         reward = robot_ob[0] - self.prev_x
         self.prev_x = robot_ob[0]
-
-        # Done by running off boundaries
-
-        # Done by reaching goal
-        # if reward > 0.1:
-        #     self.done = True
-        #     reward = 50
         
-
+        if abs(robot_ob[2]) > 1.57:
+            self.done = True
+            print("fell over!")
+            reward = -50
+        
+        
         ob = np.array(robot_ob, dtype=np.float32)
+        # print(ob)
         return ob, reward, self.done, dict()
     
     def reset(self):
@@ -77,6 +79,7 @@ class HSARobot_Env(gym.Env):
 
         # Get observation to return
         robot_ob = self.robot.get_observation()
+        self.prev_x = robot_ob[0]
 
         return np.array(robot_ob, dtype=np.float32)
     
