@@ -1,5 +1,4 @@
 import pybullet as p
-import pybullet_envs
 from gym import wrappers
 import gym
 import numpy as np

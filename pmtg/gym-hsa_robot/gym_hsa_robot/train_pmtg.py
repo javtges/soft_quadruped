@@ -5,7 +5,6 @@
 import gym
 import numpy as np
 import argparse
-import pybullet_envs
 import gym_hsa_robot
 from gym import wrappers
 import os

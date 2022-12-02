@@ -35,7 +35,6 @@ import argparse
 from multiprocessing import Process, Pipe
 import multiprocessing as mp
 import time
-import pybullet_envs
 from gym import wrappers
 import gym
 import numpy as np
@@ -169,7 +168,7 @@ class Hp():
 
     def __init__(self):
         self.nb_steps = 500
-        self.episode_length = 600
+        self.episode_length = 00
         self.learning_rate = 0.002
         self.nb_directions = 16
         self.nb_best_directions = 8
