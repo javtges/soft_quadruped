@@ -3,6 +3,11 @@ import numpy as np
 import csv
 
 
+'''
+Finds the speed from a CSV
+'''
+
+
 
 # lookup_table_filename = "bilinear_good_v1_221121_012641.csv"
 

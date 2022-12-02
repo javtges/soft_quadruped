@@ -188,7 +188,7 @@ class Normalizer():
         self.var = np.zeros(nb_inputs)
 
     def observe(self, x):
-        print(self.mean, x)
+        # print(self.mean, x)
         self.n += 1.
         last_mean = self.mean.copy()
         self.mean += (x - self.mean) / self.n
@@ -267,13 +267,18 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
                               traj_generators[2].width, traj_generators[2].height,
                               traj_generators[3].width, traj_generators[3].height], dtype=float)
         state = np.concatenate((state, tg_params), axis=0)
-        # print(state)
+        
+        # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]
+        # print("the system's state", state, "length:", len(state))
         # Augment this to include the variables we need from the TG
         normalizer.observe(state)
+        
+        # THIS DOESN'T PROPERLY APPLY NOISE!!!
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
 
-        print(action)
+        # print("action", action)
+        # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
         # print("leg1")
         eps_fl, theta_fl = traj_generators[0].step_traj(width=action[0], height=action[1], res_x=action[2], res_y=action[3])
@@ -297,6 +302,9 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
 
         # Make sure that the order of legs here is correct
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
+        noise = np.random.normal(scale=0.02, size=len(actions_tg))
+        
+        actions_tg += noise
 
         # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
@@ -315,6 +323,8 @@ def train(env, policy, normalizer, hp, traj_generators, args):
     reward_max = 0
     for step in range(hp.nb_steps):
 
+
+        print(policy.theta)
         deltas = policy.sample_deltas()
         pos_rewards = [0] * hp.nb_directions
         neg_rewards = [0] * hp.nb_directions

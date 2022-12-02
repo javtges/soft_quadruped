@@ -8,6 +8,11 @@ import readchar
 import threading
 from pupil_apriltags import Detector
 
+
+'''
+Tests apriltags?
+'''
+
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
                        quad_decimate=1.0,

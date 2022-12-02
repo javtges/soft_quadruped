@@ -20,8 +20,8 @@ class HSARobot_Env(gym.Env):
     
     def __init__(self):
         
-        self.client = p.connect(p.GUI)
-        # self.client = p.connect(p.DIRECT)
+        # self.client = p.connect(p.GUI)
+        self.client = p.connect(p.DIRECT)
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
@@ -38,6 +38,7 @@ class HSARobot_Env(gym.Env):
         self._cam_dist = 1.0
         self._cam_yaw = 0
         self._cam_pitch = -30       
+        self.prev_x = 0
         
         self.reset()
     
@@ -49,7 +50,10 @@ class HSARobot_Env(gym.Env):
         robot_ob = self.robot.get_observation()
         
         # reward = np.linalg.norm(robot_ob[-3:])
-        reward = robot_ob[4]
+        
+        # What this should do is measure the distance between the last step and this one
+        reward = robot_ob[0] - self.prev_x
+        self.prev_x = robot_ob[0]
 
         # Done by running off boundaries
 

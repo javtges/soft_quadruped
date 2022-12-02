@@ -14,7 +14,9 @@ from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 from scipy.spatial.transform import Rotation as R
 
-
+'''
+Runs a policy on the robot, [closed loop]
+'''
 
 at_detector = Detector(families='tag36h11',
                        nthreads=1,

@@ -10,6 +10,11 @@ import csv
 from datetime import datetime
 from pupil_apriltags import Detector
 
+
+'''
+Peter Stone, Gradient Estimation
+'''
+
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
                        quad_decimate=1.0,

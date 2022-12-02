@@ -9,6 +9,10 @@ import modern_robotics as mr
 from datetime import datetime
 
 
+'''
+Makes a lookup table.
+'''
+
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
                        quad_decimate=1.0,

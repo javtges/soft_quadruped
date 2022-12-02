@@ -1,4 +1,3 @@
-# import serial
 import cv2
 import pyrealsense2 as rs
 import numpy as np
@@ -7,6 +6,9 @@ import time
 import readchar
 import threading
 from pupil_apriltags import Detector
+
+
+# Measures the speed of a robot running an open loop gait on Arduino. No serial required.
 
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
