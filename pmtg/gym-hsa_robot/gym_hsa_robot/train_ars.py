@@ -169,11 +169,11 @@ class Hp():
     def __init__(self):
         self.nb_steps = 500
         self.episode_length = 1200
-        self.learning_rate = 0.002
+        self.learning_rate = 0.01
         self.nb_directions = 32
         self.nb_best_directions = 16
         assert self.nb_best_directions <= self.nb_directions
-        self.noise = 0.001 # previously 0.01
+        self.noise = 0.002 # previously 0.01
         self.seed = 42
         self.env_name = 'hsa_robot-v0'
 
@@ -302,7 +302,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
         
-        noise = np.random.normal(scale=0.005, size=len(actions_tg))
+        noise = np.random.normal(scale=0.01, size=len(actions_tg))
         actions_tg += noise
 
         # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
