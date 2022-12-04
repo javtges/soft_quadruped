@@ -24,13 +24,18 @@ class HSARobot_Env(gym.Env):
         #     self.client = p.connect(p.GUI)
         # else:
         #     self.client = p.connect(p.DIRECT)
+        
         self.client = p.connect(p.GUI)
+        self.robot = HSARobot(self.client)
+        
+        # logId = p.startStateLogging(p.STATE_LOGGING_PROFILE_TIMINGS, "timings.json")
+        
         p.setTimeStep(1/240, self.client)
         
         # Here, define my action space and my observation space
         
         self.action_space = gym.spaces.Box(np.array([-0.01, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02, -0.3, -0.02]), np.array([0.01, 0.3, 0.02, 0.3, 0.03, 0.3, 0.02, 0.3, 0.02]))
-        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -3.15, -3.15, -3.15, -1000, -1000]), np.array([1000, 1000, 3.15, 3.15, 3.15, 1000, 1000]))
+        self.observation_space = gym.spaces.Box(np.array([-1000, -1000, -3.15, -3.15, -3.15]), np.array([1000, 1000, 3.15, 3.15, 3.15]))
 
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = None
@@ -57,6 +62,7 @@ class HSARobot_Env(gym.Env):
         # What this should do is measure the distance between the last step and this one
         reward = robot_ob[0] - self.prev_x
         self.prev_x = robot_ob[0]
+        # print("reward", reward)
         
         if abs(robot_ob[2]) > 1.57:
             self.done = True
@@ -114,6 +120,7 @@ class HSARobot_Env(gym.Env):
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
+    
     
     
     

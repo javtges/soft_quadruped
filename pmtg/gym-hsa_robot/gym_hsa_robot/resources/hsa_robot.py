@@ -77,7 +77,7 @@ class HSARobot:
         # print("vel", vel)
         
         # The observation is [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel]
-        observation = (pos + ang + vel)
+        observation = (pos + ang)
 
         return observation
     

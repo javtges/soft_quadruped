@@ -168,12 +168,12 @@ class Hp():
 
     def __init__(self):
         self.nb_steps = 500
-        self.episode_length = 00
+        self.episode_length = 1200
         self.learning_rate = 0.002
-        self.nb_directions = 16
-        self.nb_best_directions = 8
+        self.nb_directions = 32
+        self.nb_best_directions = 16
         assert self.nb_best_directions <= self.nb_directions
-        self.noise = 0.0 # previously 0.01
+        self.noise = 0.001 # previously 0.01
         self.seed = 42
         self.env_name = 'hsa_robot-v0'
 
@@ -279,13 +279,13 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
         # print("leg1")
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015+action[0], height=0.003+action[1], res_x=action[2], res_y=action[3])
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
         # print("leg2")
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015+action[4], height=0.003+action[5], res_x=action[6], res_y=action[7])
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
         # print("leg3")
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015+action[8], height=0.003+action[9], res_x=action[10], res_y=action[11])
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
         # print("leg4")
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015+action[12], height=0.003+action[13], res_x=action[14], res_y=action[15])
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
         
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
@@ -318,7 +318,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         num_plays += 1
         
     print("rollout, cumulative distance in X direction: %f" %sum_rewards)
-    return sum_rewards
+    return sum_rewards #- state[1]
 
 
 def train(env, policy, normalizer, hp, traj_generators, args):
@@ -362,8 +362,11 @@ def train(env, policy, normalizer, hp, traj_generators, args):
         reward_evaluation = explore(
             env, normalizer, policy, None, None, hp, traj_generators)
         print('Step:', step, 'Reward:', reward_evaluation)
+        
         if reward_evaluation > reward_max:
-            np.save("test.npy", policy.theta)
+            
+            string = "epoch_" + str(step) + "_" + str(reward_evaluation) + ".npy"
+            np.save(string, policy.theta)
             
             # Oops, didn't have this before
             reward_max = reward_evaluation
