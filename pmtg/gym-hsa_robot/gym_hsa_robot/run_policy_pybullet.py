@@ -125,7 +125,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    policy.theta = np.load('epoch_12_1.444586428300241.npy')
+    policy.theta = np.load('epoch_51_1.502640524237528.npy')
     
     normalizer = Normalizer(n_inputs)
     
