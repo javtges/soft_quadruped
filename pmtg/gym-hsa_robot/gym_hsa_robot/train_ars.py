@@ -215,7 +215,7 @@ class Policy():
         self.env_name = env_name
         self.input_size = input_size
         self.output_size = output_size
-        print("Starting policy theta=", self.theta)
+        # print("Starting policy theta=", self.theta)
         print("Policy size=", self.theta.shape)
 
     def evaluate(self, input, delta, direction, hp):

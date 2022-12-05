@@ -125,7 +125,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    policy.theta = np.load('test3.npy')
+    policy.theta = np.load('epoch_28_0.45332655108813485.npy')
     
     normalizer = Normalizer(n_inputs)
     
@@ -155,13 +155,13 @@ if __name__ == "__main__":
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
         # print("leg1")
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.01+action[0], height=0.005+action[1], res_x=action[2], res_y=action[3])
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
         # print("leg2")
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.01+action[4], height=0.005+action[5], res_x=action[6], res_y=action[7])
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
         # print("leg3")
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.01+action[8], height=0.005+action[9], res_x=action[10], res_y=action[11])
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
         # print("leg4")
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.01+action[12], height=0.005+action[13], res_x=action[14], res_y=action[15])
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
         
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
         
-        noise = np.random.normal(scale=0.005, size=len(actions_tg))
+        noise = np.random.normal(scale=0.01, size=len(actions_tg))
         actions_tg += noise
 
         # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
