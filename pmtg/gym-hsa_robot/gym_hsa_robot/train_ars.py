@@ -91,7 +91,7 @@ class Ellipse_TG():
 
     def make_traj(self, offset):
         offset = offset*-1
-        test = np.linspace(0, 1, 240)
+        test = np.linspace(0, 1, self.cycle_length)
         eps_list = []
         theta_list = []
 
@@ -133,6 +133,10 @@ class Ellipse_TG():
         '''
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
+        # OOPS
+        self.width = width
+        self.height = height
+        
         x, y = self.make_circle(0.0, -0.074, width, height, self.cycle_length)
         x = np.asarray(x) + res_x
         y = np.asarray(y) + res_y
@@ -260,10 +264,11 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     while not done and num_plays < hp.episode_length: # Formerly: "not done and" as an additional condition
 
         # print(traj_generators[0].width)
-        tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
-                              traj_generators[1].width, traj_generators[1].height,
-                              traj_generators[2].width, traj_generators[2].height,
-                              traj_generators[3].width, traj_generators[3].height], dtype=float)
+        # tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
+        #                       traj_generators[1].width, traj_generators[1].height,
+        #                       traj_generators[2].width, traj_generators[2].height,
+        #                       traj_generators[3].width, traj_generators[3].height], dtype=float)
+        tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
         state = np.concatenate((state, tg_params), axis=0)
         
         # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]
@@ -278,20 +283,16 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
-        # print("leg1")
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
-        # print("leg2")
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
-        # print("leg3")
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
-        # print("leg4")
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
-        
-        # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
-        # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
-        # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.02, height=0.01, res_x=action[10], res_y=action[11])
-        # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.01, res_x=action[14], res_y=action[15])
+        # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
+        # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
+        # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
+        # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
 
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]))
+        
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -301,7 +302,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # Make sure that the order of legs here is correct
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
-        
+        # Adding noise to our actions here
         noise = np.random.normal(scale=0.01, size=len(actions_tg))
         actions_tg += noise
 
@@ -318,7 +319,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         num_plays += 1
         
     print("rollout, cumulative distance in X direction: %f" %sum_rewards)
-    return sum_rewards #- state[1]
+    return sum_rewards - state[1] # This should ideally prefer walking straight
 
 
 def train(env, policy, normalizer, hp, traj_generators, args):
@@ -405,10 +406,11 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
+    # n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
-    n_outputs = 8 + TG_fl.n_params*4
+    n_outputs = 8 + TG_fl.n_params
 
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
