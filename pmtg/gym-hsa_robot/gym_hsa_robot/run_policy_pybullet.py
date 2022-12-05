@@ -113,11 +113,11 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1
     
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
-    n_outputs = 8 + TG_fl.n_params*4
+    n_outputs = 8 + TG_fl.n_params
 
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    policy.theta = np.load('epoch_28_0.45332655108813485.npy')
+    policy.theta = np.load('epoch_34_0.4506067046333342.npy')
     
     normalizer = Normalizer(n_inputs)
     
@@ -136,12 +136,10 @@ if __name__ == "__main__":
     while True:
 
         # print(traj_generators[0].width)
-        tg_params = np.array([traj_generators[0].width, traj_generators[0].height,
-                              traj_generators[1].width, traj_generators[1].height,
-                              traj_generators[2].width, traj_generators[2].height,
-                              traj_generators[3].width, traj_generators[3].height], dtype=float)
-        state = np.concatenate((state, tg_params), axis=0)
-        
+        tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
+        phase = np.array([traj_generators[0].phase])
+        state = np.concatenate((state, tg_params, phase), axis=0)
+        # print(state)
         # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]
         # print("the system's state", state, "length:", len(state))
         # Augment this to include the variables we need from the TG
@@ -154,14 +152,10 @@ if __name__ == "__main__":
         # print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
-        # print("leg1")
         eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
-        # print("leg2")
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
-        # print("leg3")
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
-        # print("leg4")
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]))
         
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])

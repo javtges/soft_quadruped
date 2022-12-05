@@ -61,15 +61,6 @@ else:
 
 #########################################
 
-# imu_data = []
-# tag_xyz_data= []
-# p_count = 16
-# # params = np.ones((p_count,))*90 # Our initial parameter vector pi
-# params = np.random.randint(181, size=16)
-# # params = np.array([0, 180, 180, 0, 0, 180, 0, 180, 0, 180, 180, 0, 0, 180, 0, 180]) # Our initial parameter vector pi
-# t = 10
-# eps = 15
-# step_size = 5
 now = datetime.now().strftime("%y%m%d_%H%M%S")
 
 ##########################################
@@ -79,7 +70,6 @@ def log_csv(data, now):
     with open(filename, 'a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
-
 
 def send_policy(policy):
 
@@ -98,7 +88,6 @@ def send_policy(policy):
     print("Updated Policy", str_policy)
     
     ser.write(str_policy.encode())
-
 
 def make_policies(params, eps):
     R_list = np.zeros((t,p_count))
@@ -158,22 +147,10 @@ def eval_policy(duration, params):
     print("start eval wait")
 
     while (time.time() - starttime) < duration:
-
-        # data = ser.readline()
-        # imu = []
-        # data = data.split(b', ',-1)
-
-        # for x in data:
-        #     imu.append(float(x))
-        # # print(imu)
-        # # [M.x, M.y, M.z, G.x, G.y, G.z, A.x, A.y, A.z, Pitch (deg), Roll (deg), Heading (deg)]
-        # imu_data.append(np.array(imu))
     
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
-        
-        # print("test")
         
         if not depth_frame or not color_frame:
             continue
@@ -181,14 +158,6 @@ def eval_policy(duration, params):
         # Convert images to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        
-        
-        # Sometimes this seems to freeze everything
-        # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-        # cv2.imshow('RealSense', color_image)
-        # cv2.waitKey(1)
-        
-        # print(color_image)
             
         gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
 
@@ -203,9 +172,6 @@ def eval_policy(duration, params):
             r = R.from_matrix(tag_R)
             euler = r.as_euler('zyx', degrees=False)
             # print(tag_xyz)
-            
-            # tag_xyz_data.append(tag_xyz)
-            # times.append(time.time() - starttime)
 
     print("end eval wait")
     reward = eval_reward(tag_xyz_data, times, params)
@@ -249,11 +215,11 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1
     
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
-    n_outputs = 8 + TG_fl.n_params*4
+    n_outputs = 8 + TG_fl.n_params
 
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
@@ -296,26 +262,12 @@ if __name__ == "__main__":
             tag_R = np.array(tag_R)
             
             r = R.from_matrix(tag_R)
-            euler = r.as_euler('zyx', degrees=False)
-            tag_buffer.append(tag_xyz)
-            time_buffer.append(time.time() - starttime)
+            euler = r.as_euler('xyz', degrees=False)
             
             # Make a measurement in the format of the environment's observation space
             # observation = np.zeros((policy.output_size,))
             
-            if len(tag_buffer) > 5:
-                # print("buffers?", (tag_buffer[-1] - tag_buffer[-4]))
-                # print("buffer dem", (time_buffer[-1] - time_buffer[-4]))
-                velocity = (tag_buffer[-1] - tag_buffer[-4]) / (time_buffer[-1] - time_buffer[-4])
-                velocity = velocity.T[0]
-                time_delta = time_buffer[-1] - time_buffer[-2]
-            else:
-                velocity = np.array([0,0,0])
-                time_delta = 1/30
-                
-            print("velocity", velocity)
-            
-            state = np.array([tag_xyz[0][0], tag_xyz[1][0], np.cos(euler[0]), np.sin(euler[0]), velocity[0], velocity[1]]) # MAKE THIS THE POS, ORI, VEL
+            state = np.array([tag_xyz[0][0], tag_xyz[1][0], euler[0], euler[1], euler[2]]) # MAKE THIS THE POS, ORI, VEL
             
             # How to calculate velocity? Maybe: use the last N observations to find it rather than a single one
             
@@ -327,11 +279,10 @@ if __name__ == "__main__":
             # print("sin", np.sin(euler[0]))
             # print("velocity", velocity[0], velocity[1])
             
-            tg_params = np.array([tg_arr[0].width, tg_arr[0].height,
-                                tg_arr[1].width, tg_arr[1].height,
-                                tg_arr[2].width, tg_arr[2].height,
-                                tg_arr[3].width, tg_arr[3].height], dtype=float)
-            state = np.concatenate((state, tg_params), axis=0)
+            tg_params = np.array([tg_arr[0].width, tg_arr[0].height], dtype=float)
+            phase = np.array([tg_arr[0].phase])
+
+            state = np.concatenate((state, tg_params, phase), axis=0)
             # print("STATE BEFORE", state)
             # Augment this to include the variables we need from the TG
             
