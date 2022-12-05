@@ -151,10 +151,14 @@ class Ellipse_TG():
         # print("phase:", self.phase)
         
         if step_time:
-            self.phase = int(step_time * self.cycle_length)
+            self.phase += int(step_time * self.cycle_length)
             
-        if self.phase > self.cycle_length:
-            self.phase = self.phase - self.cycle_length
+        # if self.phase >= self.cycle_length:
+        #     self.phase = self.phase - self.cycle_length
+        # if self.phase < 0:
+        #     self.phase = 0
+        
+        # self.phase = np.clip(self.phase, 0, self.cycle_length-1)
         
         ep_out = eps[int(self.phase)] # here, we add residual
         theta_out = theta[int(self.phase)] # here we add residual
@@ -174,8 +178,8 @@ class Hp():
         self.nb_steps = 500
         self.episode_length = 1200
         self.learning_rate = 0.01
-        self.nb_directions = 32
-        self.nb_best_directions = 16
+        self.nb_directions = 1
+        self.nb_best_directions = 1
         assert self.nb_best_directions <= self.nb_directions
         self.noise = 0.002 # previously 0.01
         self.seed = 42
@@ -269,8 +273,9 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         #                       traj_generators[2].width, traj_generators[2].height,
         #                       traj_generators[3].width, traj_generators[3].height], dtype=float)
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
-        state = np.concatenate((state, tg_params), axis=0)
-        
+        phase = np.array([traj_generators[0].phase])
+        state = np.concatenate((state, tg_params, phase), axis=0)
+        print(state)
         # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]
         # print("the system's state", state, "length:", len(state))
         # Augment this to include the variables we need from the TG
@@ -407,7 +412,7 @@ if __name__ == "__main__":
     # number of inputs: number of columns
     # number of outputs: number of rows
     # n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1 #adding the input of phase here
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     n_outputs = 8 + TG_fl.n_params
