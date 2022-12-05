@@ -117,7 +117,7 @@ if __name__ == "__main__":
     
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
-    n_outputs = 8 + TG_fl.n_params
+    n_outputs = 8 + TG_fl.n_params + 1
 
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
@@ -125,13 +125,14 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    policy.theta = np.load('epoch_34_0.4506067046333342.npy')
+    policy.theta = np.load('epoch_12_1.444586428300241.npy')
     
     normalizer = Normalizer(n_inputs)
     
     starttime = time.time()
     
     state = env.reset()
+    step_number = 0
     
     while True:
 
@@ -152,16 +153,18 @@ if __name__ == "__main__":
         # print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]))
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]))
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
         
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
         # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.02, height=0.01, res_x=action[10], res_y=action[11])
         # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.01, res_x=action[14], res_y=action[15])
 
+
+        # print(action[10])
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -181,3 +184,8 @@ if __name__ == "__main__":
         # print(num_plays)
         state, reward, done, _ = env.step(actions_tg)
         # print(reward)
+        
+        step_number += 1
+        
+        if step_number == 1200:
+            print("Distance after 1200 simulation steps: ", state[0])
