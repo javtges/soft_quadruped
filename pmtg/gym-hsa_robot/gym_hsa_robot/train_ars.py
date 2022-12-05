@@ -179,8 +179,8 @@ class Hp():
         self.nb_steps = 500
         self.episode_length = 1200
         self.learning_rate = 0.01
-        self.nb_directions = 24
-        self.nb_best_directions = 12
+        self.nb_directions = 12
+        self.nb_best_directions = 4
         assert self.nb_best_directions <= self.nb_directions
         self.noise = 0.002 # previously 0.01
         self.seed = 42
@@ -239,10 +239,12 @@ class Policy():
             out_arr = np.clip(test, -1.0, 1.0)
             return  out_arr # Verify that this has the same behavior as the function below
         elif direction == "positive":
+            #print((self.theta + hp.noise * delta))
             return np.clip((self.theta + hp.noise * delta).dot(input), -1.0, 1.0)
         else:
             # print(self.theta.shape)
             # print(input.shape)
+            #print((self.theta - hp.noise * delta))
             return np.clip((self.theta - hp.noise * delta).dot(input), -1.0, 1.0)
 
     def sample_deltas(self):
@@ -263,6 +265,7 @@ class Policy():
 def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     state = env.reset()
     # print("state", state)  # this is an ndarray
+    #print(policy.theta)
     done = False
     num_plays = 0.
     sum_rewards = 0
@@ -293,11 +296,11 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[4]), height=0.003*(1+action[5]), res_x=0.023*(action[6]), res_y=0.005*(action[7]))
         # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
         # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
-        print(action[10])
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=action[10])
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=action[10])
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=action[10])
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=action[10])
+        #print(action[10])
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
         
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
@@ -381,6 +384,8 @@ def train(env, policy, normalizer, hp, traj_generators, args):
 
 
 if __name__ == "__main__":
+    
+    np.set_printoptions(suppress=True)
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
