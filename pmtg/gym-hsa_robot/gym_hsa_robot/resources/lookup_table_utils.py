@@ -64,20 +64,30 @@ class LookupTable:
     def p(self, p1, p2, p3):
         (x1, y1), (x2, y2), (x3, y3) = p1, p2, p3
         dx, dy = x2-x1, y2-y1
-        det = dx*dx + dy*dy
-        a = (dy*(y3-y1)+dx*(x3-x1))/det
-        return x1+a*dx, y1+a*dy
+        print("dx, dy: ", dx, dy)
+        if dx != 0.0 and dy != 0.0:
+            det = dx*dx + dy*dy
+            print("det: ", det)
+            a = (dy*(y3-y1)+dx*(x3-x1))/det
+            return x1+a*dx, y1+a*dy
+        else:
+            print("points are the same!", p1)
+            return x1, y1
+        
     
     # Function adapted from https://stackoverflow.com/questions/72031447/how-to-calculate-the-proportional-percentage-of-a-point-of-an-x-y-coordinate-wit
     def percent_along_line(self, p1, p2, p3):
         (X1, Y1), (X2, Y2), (XF, YF) = p1, p2, p3
         dx = X2-X1
         dy = Y2-Y1
-        if dx>dy:
-            t = (XF - X1) / dx
+        if dx != 0 and dy != 0:
+            if dx>dy:
+                t = (XF - X1) / dx
+            else:
+                t = (YF - Y1) / dy
+            return t
         else:
-            t = (YF - Y1) / dy
-        return t
+            return 0
     
     def interpolate_bilinear(self, x, y):
         """Given a coordinate requested by a trajectory, find the required motor commands.
@@ -152,9 +162,83 @@ class LookupTable:
         
         return n1, n2
     
+    def interpolate_bilinear_scalar(self, x, y):
+        """Given a coordinate requested by a trajectory, find the required motor commands.
+        Searches the lookup table and finds the two closest points.
+        Then, draws a line between them and picks the midpoint
+        Uses the midpoint to interpolate the motor values of the two points
+
+        Args:
+            x (_type_): X
+            y (_type_): Y
+
+        Returns:
+            n1: Motor number 1
+            n2: Motor number 2
+        """
+        n1 = []
+        n2 = []
+        # Get the list of distances from the point
+        # Find the lowest and second lowest elements in the list
+        
+        for idx, val in enumerate(x):
+        
+        
+            distances = np.sqrt( np.square(self.x - x), np.square(self.y - y))
+            n = np.argpartition(distances, 2)[:2]
+            
+            
+            print("point 3", x, y)
+            x1 = self.x[n[0]]
+            y1 = self.y[n[0]]
+            
+            print("point 1", x1, y1)
+            x2 = self.x[n[1]]
+            y2 = self.y[n[1]]
+            
+            print("point 2", x2, y2)
+            n1_1 = self.num1[n[0]]
+            n2_1 = self.num2[n[0]]
+            
+            print("numbers_p1", n1_1, n2_1)
+            n1_2 = self.num1[n[1]]
+            n2_2 = self.num2[n[1]]
+            
+            print("numbers_p2", n1_2, n2_2)
+            diff_n1 = n1_2 - n1_1
+            diff_n2 = n2_2 - n2_1
+            
+            # One suggestion here is to average the two numbers
+            # n1a = (n1_1 + n2_1)/2
+            # n2a = (n1_2 + n2_2)/2
+            
+            # Other idea, from Matt: Find the distance between the two points, find the percentage of
+            # the distance along the line
+            
+            x4, y4 = self.p((x1,y1), (x2,y2), (x[idx],y[idx]))
+            
+            print("point 4", x4, y4)
+            t = self.percent_along_line((x1,y1), (x2,y2), (x4,y4))
+            
+            print("T?", t)
+            
+            n1a = np.clip(int(n1_1 + t * diff_n1),0,180)
+            n2a = np.clip(int(n2_1 + t * diff_n2),0,180)
+            
+            n1.append(n1a)
+            n2.append(n2a)
+            print("n1, n2", n1a, n2a)
+            
+        n1 = np.asarray(n1)
+        n2 = np.asarray(n2)
+        
+        return n1, n2
+    
     
 if __name__ == '__main__':
     
     a = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
-    n1, n2 = a.interpolate_bilinear([1], [1])
-    print(n1, n2)
+    n1, n2 = a.interpolate_bilinear([0], [0])
+    print("reg", n1, n2)
+    n1, n2 = a.interpolate_bilinear_scalar([0], [1])
+    print("new", n1, n2)

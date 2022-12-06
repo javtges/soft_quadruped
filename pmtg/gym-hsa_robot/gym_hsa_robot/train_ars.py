@@ -151,7 +151,7 @@ class Ellipse_TG():
         # print("phase:", self.phase)
         
         if step_time:
-            self.phase += int(step_time * self.cycle_length)
+            self.phase += int(step_time * self.cycle_length / 4)
             self.phase = self.phase % (self.cycle_length-1)
             
         # if self.phase >= self.cycle_length:

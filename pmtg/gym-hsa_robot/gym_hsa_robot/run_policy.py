@@ -13,6 +13,7 @@ from pupil_apriltags import Detector
 from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 from scipy.spatial.transform import Rotation as R
+import modern_robotics as mr
 
 '''
 Runs a policy on the robot, [closed loop]
@@ -99,34 +100,6 @@ def make_policies(params, eps):
 
     return R_list, eps_list
 
-# def eval_reward(tag_xyz_data, times, params):
-#     # print("Eval reward", tag_xyz_data)
-#     dist_array = []
-#     # print(imu_data)
-#     if len(tag_xyz_data) > 0:
-#         # print(tag_xyz_data[0].shape)
-#         # for tag in range(1, len(tag_xyz_data)):
-#         #     d = float((tag_xyz_data[tag][0][:] - tag_xyz_data[tag-1][0][:]))**2 + float((tag_xyz_data[tag][1][:] - tag_xyz_data[tag-1][1][:]))**2 + float((tag_xyz_data[tag][2][:] - tag_xyz_data[tag-1][2][:]))**2
-#         #     dist_array.append(np.sqrt(d))
-
-#         d = float((tag_xyz_data[-1][0][:] - tag_xyz_data[0][0][:]))**2 + float((tag_xyz_data[-1][1][:] - tag_xyz_data[0][1][:]))**2 + float((tag_xyz_data[-1][2][:] - tag_xyz_data[0][2][:]))**2
-#         # print(dist_array)
-#         # print(tag_xyz_data[len(tag_xyz_data)-1][0][:], tag_xyz_data[len(tag_xyz_data)-1][1][:] )
-#         distance = np.sqrt(d) # np.sum(dist_array)
-#         print("distance in m", distance)
-#         distance = distance/(times[-1] - times[0])
-#         print("distance in m/s", distance, times[-1] - times[0])
-#     else:
-#         distance = 0
-        
-#     print(params)
-#     data = list(params)
-#     data.append(distance)
-#     data.append(time.time())
-    
-#     log_csv(data, now)
-#     return distance
-
 # Start streaming
 cfg = pipeline.start(config)
 profile = cfg.get_stream(rs.stream.color)
@@ -134,48 +107,6 @@ intr = profile.as_video_stream_profile().get_intrinsics()
 print(intr)
 pause_flag = 0
 tag_xyz = np.zeros((3,1))
-
-# def eval_policy(duration, params):
-
-#     starttime = time.time()
-#     tag_xyz_data = []
-#     x_data = []
-#     y_data = []
-#     z_data = []
-#     imu_data = []
-#     times = []
-#     print("start eval wait")
-
-#     while (time.time() - starttime) < duration:
-    
-#         frames = pipeline.wait_for_frames()
-#         depth_frame = frames.get_depth_frame()
-#         color_frame = frames.get_color_frame()
-        
-#         if not depth_frame or not color_frame:
-#             continue
-
-#         # Convert images to numpy arrays
-#         depth_image = np.asanyarray(depth_frame.get_data())
-#         color_image = np.asanyarray(color_frame.get_data())
-            
-#         gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
-
-#         tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
-
-#         if len(tags) != 0:
-#             tag_xyz = tags[0].pose_t
-#             tag_R = tags[0].pose_R
-#             tag_xyz = np.array(tag_xyz)
-#             tag_R = np.array(tag_R)
-            
-#             r = R.from_matrix(tag_R)
-#             euler = r.as_euler('zyx', degrees=False)
-#             # print(tag_xyz)
-
-#     print("end eval wait")
-#     reward = eval_reward(tag_xyz_data, times, params)
-#     return reward
    
 def inverse(n):
     return 180-n
@@ -217,11 +148,10 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1
-    
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1    
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
-    # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
-    n_outputs = 8 + TG_fl.n_params
+    # n_outputs = env.action_space =.shape[0] + 8 + TG_fl.n_params*4
+    n_outputs = 8 + TG_fl.n_params + 1
 
     print("Observation space =", n_inputs)
     print("Action space =", n_outputs)
@@ -229,24 +159,31 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('test.npy')
+    policy.theta = np.load('/home/james/final_project/src/epoch_12_0.5409237400947021.npy')
     
     normalizer = Normalizer(n_inputs)
     
-    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
+    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_out.csv')
 
 
     tag_buffer = []
     time_buffer = [] 
-    starttime = time.time()   
+    prev_time = time.time()   
     first_frame = True
+    euler_zero = np.zeros(3)
+    q_first = np.zeros(3)
+    
+    identity = np.array([[1, 0, 0, 0],
+                        [0, 1, 0 ,0],
+                        [0, 0, 1, 0],
+                        [0, 0, 0, 1]])
     
     while True:
 
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
-                
+        
         if not depth_frame or not color_frame:
             continue
 
@@ -259,20 +196,41 @@ if __name__ == "__main__":
         tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
 
         if len(tags) != 0:
+            print("found tag")
             tag_xyz = tags[0].pose_t
             tag_R = tags[0].pose_R
             tag_xyz = np.array(tag_xyz)
             tag_R = np.array(tag_R)
             
             r = R.from_matrix(tag_R)
-            euler = r.as_euler('xyz', degrees=False)
+            q = r.as_quat()
+            
+            print(q)
+            # euler = r.as_euler('xyz', degrees=False)
             
             camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
             if first_frame:
                 zero_to_cam = mr.TransInv(camera_to_tag)
+                q_first = q
                 transform = identity
+                e = R.from_quat(q_first)
+                eye = np.eye(3)
+                eye_r = R.from_matrix(eye)
+                euler = eye_r.as_euler("xyz", degrees=False)
+                print("AAAAAAA", euler)
+                print("first transform: ", zero_to_cam)
+                first_frame = False
             else:
-                transform = zero_to_cam @ camera_to_tag
+                transform = zero_to_cam @ camera_to_tag # Zero to tag transform?
+                print("zero to tag: ", transform)
+                tag_R2 = transform[0:3, 0:3]
+                print(tag_R2)
+                # r2 = R.from_matrix(tag_R2)
+                # res = tag_R2 @ tag_R
+                res = R.from_matrix(tag_R2)
+                euler = res.as_euler("XYZ", degrees=False)
+                print("BBBBB", euler)
+                
 
             # Make a measurement in the format of the environment's observation space
             # observation = np.zeros((policy.output_size,))
@@ -295,11 +253,14 @@ if __name__ == "__main__":
             action = policy.evaluate(input=state, delta=None, direction=None, hp=None)
             
             
+            time_delta = time.time() - prev_time
+            print("time delta: ", time_delta)
+            prev_time = time.time()
             
-            eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
-            eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
-            eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
-            eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
+            eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time = time_delta + abs(action[10]))
+            eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time = time_delta + abs(action[10]))
+            eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time = time_delta + abs(action[10]))
+            eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time = time_delta + abs(action[10]))
             # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
             # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -315,14 +276,15 @@ if __name__ == "__main__":
             x_rl, y_rl = tg_arr[2].joints_to_xy_legframe(theta_rl, eps_rl)
             x_rr, y_rr = tg_arr[3].joints_to_xy_legframe(theta_rr, eps_rr)
             
-            n1_fl, n2_fl = lut.interpolate_bilinear(x_fl, y_fl)
-            n1_fr, n2_fr = lut.interpolate_bilinear(x_fr, y_fr)
-            n1_rl, n2_rl = lut.interpolate_bilinear(x_rl, y_rl)
-            n1_rr, n2_rr = lut.interpolate_bilinear(x_rr, y_rr)
+            n1_fl, n2_fl = lut.interpolate_bilinear([x_fl], [y_fl+0.07])
+            n1_fr, n2_fr = lut.interpolate_bilinear([x_fr], [y_fr+0.07])
+            n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
+            n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
             
+            print([n1_fr, n2_fr, n1_fl, n2_fl, n1_rl, n2_rl, n2_rr, n2_rr])
             
-            # This is wrong, fix it
-            send_policy([n1_fl, n2_fl, n1_fr, n2_fr, n1_rl, n2_rl, n2_rr, n2_rr])
+            # This is according to the notebook
+            send_policy([n1_fr, n2_fr, n1_fl, n2_fl, n1_rl, n2_rl, n2_rr, n2_rr])
             
             # Change this so that it sleeps the right amount of time to send commands every 0.1s
             # time.sleep(0.1)
