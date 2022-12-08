@@ -65,12 +65,7 @@ else:
 now = datetime.now().strftime("%y%m%d_%H%M%S")
 
 ##########################################
-
-def log_csv(data, now):
-    filename = 'policytest_' + now
-    with open(filename, 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
+filename = 'policytest_' + now
 
 def send_policy(policy):
 
@@ -99,6 +94,18 @@ def make_policies(params, eps):
         R_list[row][:] = e + params
 
     return R_list, eps_list
+
+def write_csv(filename, R, nums):
+    n = filename
+    # Verify the ordering of the transform and everything is right
+    with open(n, 'a') as f:
+        writer = csv.writer(f)
+        t = datetime.now().strftime("%y%m%d_%H%M%S")
+        
+        # Could be different ordering of motors
+        writer.writerow([0, 0, 0, 0, R[0][3], R[1][3], R[2][3], R[0][0], R[0][1], R[0][2], R[1][0], R[1][1], R[1][2], R[2][0], R[2][1], R[2][2],
+                         nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6], nums[7], t])
+
 
 # Start streaming
 cfg = pipeline.start(config)
@@ -148,7 +155,7 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1    
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1 - 2
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     # n_outputs = env.action_space =.shape[0] + 8 + TG_fl.n_params*4
     n_outputs = 8 + TG_fl.n_params + 1
@@ -235,7 +242,7 @@ if __name__ == "__main__":
             # Make a measurement in the format of the environment's observation space
             # observation = np.zeros((policy.output_size,))
             
-            state = np.array([transform[0][3], transform[1][3], euler[0], euler[1], euler[2]]) # MAKE THIS THE POS, ORI, VEL
+            state = np.array([euler[0], euler[1], euler[2]]) # MAKE THIS THE POS, ORI, VEL -> changed to orientation only
                         
             # Evaluate the policy to get an action
             
@@ -254,13 +261,13 @@ if __name__ == "__main__":
             
             
             time_delta = time.time() - prev_time
-            print("time delta: ", time_delta)
+            print("time delta: ", time_delta-0.1)
             prev_time = time.time()
             
-            eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time = time_delta + abs(action[10]))
-            eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time = time_delta + abs(action[10]))
-            eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time = time_delta + abs(action[10]))
-            eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time = time_delta + abs(action[10]))
+            eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
             # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
             # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -284,6 +291,8 @@ if __name__ == "__main__":
             params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
             params = np.clip(params, 70, 150)
             print(params)
+            
+            write_csv(filename, transform, params)
             
             # This is according to the notebook
             send_policy(params)
