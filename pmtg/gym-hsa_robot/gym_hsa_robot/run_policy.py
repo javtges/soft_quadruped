@@ -159,7 +159,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('/home/james/final_project/src/epoch_12_0.5409237400947021.npy')
+    # policy.theta = np.load('/home/james/final_project/src/epoch_66_1.9510125950834536.npy')
     
     normalizer = Normalizer(n_inputs)
     
@@ -281,10 +281,12 @@ if __name__ == "__main__":
             n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
             n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
             
-            print([n1_fr, n2_fr, n1_fl, n2_fl, n1_rl, n2_rl, n2_rr, n2_rr])
+            params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
+            params = np.clip(params, 70, 150)
+            print(params)
             
             # This is according to the notebook
-            send_policy([n1_fr, n2_fr, n1_fl, n2_fl, n1_rl, n2_rl, n2_rr, n2_rr])
+            send_policy(params)
             
             # Change this so that it sleeps the right amount of time to send commands every 0.1s
-            # time.sleep(0.1)
+            time.sleep(0.1)

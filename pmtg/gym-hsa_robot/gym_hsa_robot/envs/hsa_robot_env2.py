@@ -25,7 +25,7 @@ class HSARobot_Env(gym.Env):
         # else:
         #     self.client = p.connect(p.DIRECT)
         
-        self.client = p.connect(p.DIRECT)
+        self.client = p.connect(p.GUI)
         self.robot = HSARobot(self.client)
         
         # logId = p.startStateLogging(p.STATE_LOGGING_PROFILE_TIMINGS, "timings.json")
