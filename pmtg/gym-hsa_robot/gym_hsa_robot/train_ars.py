@@ -277,6 +277,9 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         #                       traj_generators[3].width, traj_generators[3].height], dtype=float)
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
         phase = np.array([traj_generators[0].phase])
+        
+        state = state[2:]
+
         state = np.concatenate((state, tg_params, phase), axis=0)
         # print(state)
         # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]

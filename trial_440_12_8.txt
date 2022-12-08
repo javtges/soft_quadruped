@@ -1,0 +1,232 @@
+[[0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0.]]
+rollout, cumulative distance in X direction: 0.122907
+rollout, cumulative distance in X direction: 0.156112
+rollout, cumulative distance in X direction: 0.169924
+rollout, cumulative distance in X direction: 0.085255
+rollout, cumulative distance in X direction: 0.153995
+rollout, cumulative distance in X direction: 0.129254
+rollout, cumulative distance in X direction: 0.114050
+rollout, cumulative distance in X direction: 0.159891
+rollout, cumulative distance in X direction: 0.109282
+rollout, cumulative distance in X direction: 0.146960
+rollout, cumulative distance in X direction: 0.152348
+rollout, cumulative distance in X direction: 0.096702
+rollout, cumulative distance in X direction: 0.112439
+rollout, cumulative distance in X direction: 0.154363
+rollout, cumulative distance in X direction: 0.098944
+rollout, cumulative distance in X direction: 0.152196
+rollout, cumulative distance in X direction: 0.116517
+rollout, cumulative distance in X direction: 0.081995
+rollout, cumulative distance in X direction: 0.079601
+rollout, cumulative distance in X direction: 0.073326
+rollout, cumulative distance in X direction: 0.067179
+rollout, cumulative distance in X direction: 0.119847
+rollout, cumulative distance in X direction: 0.136736
+rollout, cumulative distance in X direction: 0.096337
+rollout, cumulative distance in X direction: 0.161248
+Step: 0 Reward: 0.16357625673147128
+New maximum reward!
+[[ 0.00698133  0.01121697  0.00112022  0.01719362 -0.00093829  0.00371062
+   0.01034388  0.01231519]
+ [ 0.01209745  0.0021644  -0.00318148 -0.00002678 -0.00069143  0.00359012
+  -0.01157546  0.01760345]
+ [-0.00043979 -0.00923427 -0.0047743  -0.01248864  0.00253369  0.00043497
+  -0.00848941 -0.01243069]
+ [-0.00032786  0.01434727  0.00036177 -0.00445716 -0.00717891 -0.00117598
+  -0.01891713  0.00232233]
+ [ 0.00105459  0.02843333  0.01588735  0.01536982  0.00387213 -0.00560725
+   0.01716522  0.00491567]
+ [-0.00128884 -0.00351744  0.00006757 -0.00233186  0.0104318  -0.01712809
+   0.00227225 -0.01190311]
+ [-0.00372349  0.00619968 -0.00324211  0.01084853 -0.02692752  0.00590017
+   0.00746006 -0.01574573]
+ [-0.00483121 -0.00472911  0.00118995 -0.00342014 -0.02160511  0.01598263
+   0.00513846  0.013405  ]
+ [ 0.00606633 -0.01163611 -0.00509877  0.00668759 -0.01607212  0.00404979
+  -0.00420029 -0.00553444]
+ [ 0.01163912  0.00835211 -0.00967752  0.01622282  0.00279456  0.01063489
+  -0.00213449 -0.00452812]
+ [ 0.01034402 -0.00949963  0.00999417  0.00446397 -0.00870673  0.0107748
+  -0.02308739 -0.01185712]]
+rollout, cumulative distance in X direction: 0.178646
+rollout, cumulative distance in X direction: 0.078657
+rollout, cumulative distance in X direction: 0.170757
+rollout, cumulative distance in X direction: 0.172276
+rollout, cumulative distance in X direction: 0.144363
+rollout, cumulative distance in X direction: 0.173142
+rollout, cumulative distance in X direction: 0.171318
+rollout, cumulative distance in X direction: 0.199031
+rollout, cumulative distance in X direction: 0.144867
+rollout, cumulative distance in X direction: 0.116609
+rollout, cumulative distance in X direction: 0.163256
+rollout, cumulative distance in X direction: 0.147067
+rollout, cumulative distance in X direction: 0.116282
+rollout, cumulative distance in X direction: 0.095986
+rollout, cumulative distance in X direction: 0.124899
+rollout, cumulative distance in X direction: 0.066327
+rollout, cumulative distance in X direction: 0.182386
+rollout, cumulative distance in X direction: 0.131266
+rollout, cumulative distance in X direction: 0.123404
+rollout, cumulative distance in X direction: 0.121144
+rollout, cumulative distance in X direction: 0.085152
+rollout, cumulative distance in X direction: 0.203752
+rollout, cumulative distance in X direction: 0.134503
+rollout, cumulative distance in X direction: 0.079079
+rollout, cumulative distance in X direction: 0.179792
+Step: 1 Reward: 0.17707970177991764
+New maximum reward!
+[[ 0.00578987  0.00201845  0.00519762  0.03207612  0.0137936   0.01495356
+  -0.00074809  0.00843374]
+ [ 0.01573663 -0.00067838  0.01015195  0.01047981  0.0035676  -0.00541398
+  -0.00796123  0.0255811 ]
+ [-0.02688692 -0.00288264 -0.01037921 -0.01048205 -0.00107748 -0.00669922
+  -0.01816544 -0.00425123]
+ [ 0.00245475  0.0145385   0.01212571  0.00731707 -0.01294067 -0.01094542
+  -0.00700793 -0.00519154]
+ [ 0.00892505  0.01967519  0.01022373  0.01754751  0.00798175 -0.01331679
+   0.01674892  0.01769185]
+ [-0.00418766  0.0056288  -0.00905966 -0.01736229  0.01298771 -0.02057172
+  -0.00481436 -0.01603928]
+ [-0.00084559  0.01139013 -0.01178727  0.01234938 -0.02713491  0.00676378
+   0.02216866 -0.02541419]
+ [ 0.00751726 -0.01481552  0.00481339 -0.0162466  -0.02422634  0.01886287
+   0.01575979  0.00977418]
+ [ 0.00501209 -0.02205628 -0.00234346  0.00622562 -0.02587221  0.01057333
+   0.00516996 -0.03936874]
+ [ 0.02825906  0.00214338 -0.00390049  0.01618382  0.00488102 -0.00148349
+  -0.00084593 -0.01041287]
+ [-0.00126823 -0.02307419  0.00972288  0.00162335 -0.00891951  0.0183021
+  -0.01321598 -0.02836438]]
+rollout, cumulative distance in X direction: 0.170206
+rollout, cumulative distance in X direction: 0.115132
+rollout, cumulative distance in X direction: 0.136655
+rollout, cumulative distance in X direction: 0.173734
+rollout, cumulative distance in X direction: 0.144706
+rollout, cumulative distance in X direction: 0.128001
+rollout, cumulative distance in X direction: 0.155141
+rollout, cumulative distance in X direction: 0.157878
+rollout, cumulative distance in X direction: 0.154064
+rollout, cumulative distance in X direction: 0.133274
+rollout, cumulative distance in X direction: 0.138828
+rollout, cumulative distance in X direction: 0.187192
+rollout, cumulative distance in X direction: 0.101634
+rollout, cumulative distance in X direction: 0.143335
+rollout, cumulative distance in X direction: 0.159428
+rollout, cumulative distance in X direction: 0.191901
+rollout, cumulative distance in X direction: 0.120876
+rollout, cumulative distance in X direction: 0.122878
+rollout, cumulative distance in X direction: 0.149106
+rollout, cumulative distance in X direction: 0.193031
+rollout, cumulative distance in X direction: 0.109583
+rollout, cumulative distance in X direction: 0.161478
+rollout, cumulative distance in X direction: 0.186038
+rollout, cumulative distance in X direction: 0.166844
+rollout, cumulative distance in X direction: 0.188520
+Step: 2 Reward: 0.18292508688376252
+New maximum reward!
+[[ 0.01343065  0.01666187  0.00725971  0.02093927  0.01359058  0.00888255
+  -0.0056638   0.02101088]
+ [ 0.01030266 -0.00255312  0.01979038  0.00911398  0.00965593 -0.00107883
+  -0.00214054  0.02402242]
+ [-0.02421245 -0.00274501 -0.02006629 -0.00411753  0.01105964 -0.0053784
+  -0.02376541 -0.01532005]
+ [ 0.0040386   0.00346376 -0.00131595  0.00566208 -0.01359208 -0.00691175
+  -0.01006892 -0.01521129]
+ [-0.00050978  0.01225914 -0.00048418  0.01402863  0.00423382 -0.0239263
+   0.01524766  0.02104382]
+ [-0.0120207   0.01282788 -0.01711232 -0.02774421  0.00597225 -0.01416517
+   0.00105373 -0.00035209]
+ [-0.0008991   0.00612492 -0.01790523 -0.00199337 -0.02527328  0.00264626
+   0.02969696 -0.03803963]
+ [ 0.01264319 -0.02851158 -0.00150323 -0.01569202 -0.0335109   0.02023316
+   0.01033423  0.02223344]
+ [ 0.00159423 -0.02539973 -0.0031071   0.00809136 -0.03200028  0.00817454
+   0.00608652 -0.04876025]
+ [ 0.03701122  0.00529267  0.00494519  0.0147472  -0.0153729   0.00562712
+  -0.0027168  -0.00906579]
+ [-0.01359318 -0.01302247  0.00305774 -0.00081639 -0.00397659  0.01736421
+  -0.00631224 -0.03047734]]
+rollout, cumulative distance in X direction: 0.197979
+rollout, cumulative distance in X direction: 0.215910
+rollout, cumulative distance in X direction: 0.108790
+rollout, cumulative distance in X direction: 0.136338
+rollout, cumulative distance in X direction: 0.144902
+rollout, cumulative distance in X direction: 0.151249
+rollout, cumulative distance in X direction: 0.161194
+rollout, cumulative distance in X direction: 0.179117
+rollout, cumulative distance in X direction: 0.145795
+rollout, cumulative distance in X direction: 0.199610
+rollout, cumulative distance in X direction: 0.213849
+rollout, cumulative distance in X direction: 0.206667
+rollout, cumulative distance in X direction: 0.216100
+rollout, cumulative distance in X direction: 0.026592
+rollout, cumulative distance in X direction: 0.195446
+rollout, cumulative distance in X direction: 0.225723
+rollout, cumulative distance in X direction: 0.157608
+rollout, cumulative distance in X direction: 0.150493
+rollout, cumulative distance in X direction: 0.194672
+rollout, cumulative distance in X direction: 0.179022
+rollout, cumulative distance in X direction: 0.233902
+rollout, cumulative distance in X direction: 0.180674
+rollout, cumulative distance in X direction: 0.223371
+rollout, cumulative distance in X direction: 0.212331
+rollout, cumulative distance in X direction: 0.210531
+Step: 3 Reward: 0.22029355698953298
+New maximum reward!
+[[ 0.01877782  0.02903104  0.01888688  0.02219194  0.02518872  0.0222886
+  -0.0046987   0.01684332]
+ [ 0.01889055 -0.00996885  0.00163729 -0.00044419  0.01513848 -0.00496876
+  -0.00072828  0.03022704]
+ [-0.01795335 -0.00346461 -0.019124   -0.00395597  0.01227529 -0.01377694
+  -0.02989361 -0.02886836]
+ [ 0.01748194 -0.0018564  -0.00458463 -0.00747182 -0.00996695 -0.01159868
+  -0.00690511 -0.00558046]
+ [-0.00734108  0.00321714 -0.00084031  0.01261543  0.00717779 -0.01038461
+   0.0136055   0.02433134]
+ [-0.01546776  0.01059014 -0.01631363 -0.0262911   0.00510506 -0.01241015
+  -0.0057467   0.00144341]
+ [ 0.01063703  0.01476608 -0.02508093  0.00411863 -0.03462735  0.00938036
+   0.02624655 -0.02225126]
+ [ 0.01903796 -0.03423102 -0.00445827 -0.00972415 -0.02939488  0.0254192
+   0.00171937  0.02968851]
+ [-0.00487577 -0.02353335  0.01192552  0.0062133  -0.03902488  0.01775678
+   0.02075436 -0.04358689]
+ [ 0.03923864  0.00711706  0.01013447  0.0125713  -0.01508104  0.00152335
+  -0.00443151 -0.01689925]
+ [-0.00368963 -0.00894393 -0.00468173 -0.00087149 -0.00655075  0.0289325
+  -0.00732628 -0.02611574]]
+rollout, cumulative distance in X direction: 0.160079
+rollout, cumulative distance in X direction: 0.216409
+rollout, cumulative distance in X direction: 0.184651
+rollout, cumulative distance in X direction: 0.256694
+rollout, cumulative distance in X direction: 0.192393
+rollout, cumulative distance in X direction: 0.266047
+rollout, cumulative distance in X direction: 0.233209
+rollout, cumulative distance in X direction: 0.200109
+rollout, cumulative distance in X direction: 0.172562
+rollout, cumulative distance in X direction: 0.215449
+rollout, cumulative distance in X direction: 0.242786
+rollout, cumulative distance in X direction: 0.254288
+rollout, cumulative distance in X direction: 0.245458
+rollout, cumulative distance in X direction: 0.186348
+rollout, cumulative distance in X direction: 0.249602
+rollout, cumulative distance in X direction: 0.191476
+rollout, cumulative distance in X direction: 0.277357
+rollout, cumulative distance in X direction: 0.163276
+rollout, cumulative distance in X direction: 0.196893
+rollout, cumulative distance in X direction: 0.233844
+rollout, cumulative distance in X direction: 0.241409
+rollout, cumulative distance in X direction: 0.207840
+rollout, cumulative distance in X direction: 0.244414
+rollout, cumulative distance in X direction: 0.229910
+rollout, cumulative distance in X direction: 0.069080
