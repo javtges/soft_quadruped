@@ -26,7 +26,7 @@ args = parser.parse_args()
 filename = args.filename
 now = datetime.now().strftime("%y%m%d_%H%M%S")
 filename = filename + "_" + now + ".csv"
-
+print(filename)
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
                        quad_decimate=1.0,
@@ -80,19 +80,18 @@ def start_csv(filename):
 def write_csv(filename, R):
     n = filename
     # Verify the ordering of the transform and everything is right
-    with open(n, 'a') as f:
+    with open(filename, 'a') as f:
         writer = csv.writer(f)
         t = datetime.now().strftime("%y%m%d_%H%M%S")
         
         # Could be different ordering of motors
         writer.writerow([0, 0, 0, 0, R[0][3], R[1][3], R[2][3], R[0][0], R[0][1], R[0][2], R[1][0], R[1][1], R[1][2], R[2][0], R[2][1], R[2][2], t])
+        f.flush()
 
-
-start_csv(filename)
+# start_csv(filename)
 
 while True:
 
-        
     frames = pipeline.wait_for_frames()
     depth_frame = frames.get_depth_frame()
     color_frame = frames.get_color_frame()
@@ -109,7 +108,6 @@ while True:
     gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
     
     tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
-    # print(tags)
 
     if len(tags) != 0:
         tag_xyz = tags[0].pose_t
@@ -119,6 +117,8 @@ while True:
         print(tag_xyz)
         print(tag_R)
         camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
-
+        print("WRITING TO CSV")
         write_csv(filename, camera_to_tag)
+        
+    
 
