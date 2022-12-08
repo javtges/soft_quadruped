@@ -68,9 +68,9 @@ class Ellipse_TG():
         self.cycle_length = 240
         self.phase = 0
         self.center_x = 0.0
-        self.center_y = -0.07
+        self.center_y = -0.074
         self.width = 0.02
-        self.height = 0.02
+        self.height = 0.004
         self.n_params = 2
 
     def rotate(l, n):
@@ -129,7 +129,7 @@ class Ellipse_TG():
         y_foot = y+0.07
         return x_foot, y_foot
 
-    def step_traj(self, width, height, res_x, res_y, step_theta=True, step_time=None):
+    def step_traj(self, width, height, res_x, res_y, step_theta=1, step_time=None):
         '''
         Given: a width, height, find the (theta, eps) that makes sense at the given timestep
         '''
@@ -151,7 +151,7 @@ class Ellipse_TG():
         # print("phase:", self.phase)
         
         if step_time:
-            self.phase += int(step_time * self.cycle_length / 4)
+            self.phase += int( (step_time * self.cycle_length) )
             self.phase = self.phase % (self.cycle_length-1)
             
         # if self.phase >= self.cycle_length:
@@ -161,14 +161,13 @@ class Ellipse_TG():
         
         # self.phase = np.clip(self.phase, 0, self.cycle_length-1)
         
-        ep_out = eps[int(self.phase)] # here, we add residual
-        theta_out = theta[int(self.phase)] # here we add residual
+        ep_out = eps[int(self.phase)]
+        theta_out = theta[int(self.phase)]
         # print(self.phase)
         
-        if step_theta:
-            self.phase += 1
-            if self.phase == self.cycle_length:
-                self.phase = 0
+        if step_theta or step_time:
+            self.phase += step_theta
+            self.phase = self.phase % (self.cycle_length-1)
 
         return ep_out, theta_out
 
@@ -297,11 +296,16 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[8]), height=0.003*(1+action[9]), res_x=0.023*(action[10]), res_y=0.005*(action[11]))
         # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[12]), height=0.003*(1+action[13]), res_x=0.023*(action[14]), res_y=0.005*(action[15]))
         #print(action[10])
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
+        # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
+        # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
+        # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
+        # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
         
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time=abs(action[10]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time=abs(action[10]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
+
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -312,20 +316,21 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
         # Adding noise to our actions here
-        noise = np.random.normal(scale=0.002, size=len(actions_tg))
+        noise = np.random.normal(scale=0.001, size=len(actions_tg))
         actions_tg += noise
 
         # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
         # env.render()
         # print(num_plays)
-        state, reward, done, _ = env.step(actions_tg)
-        # print(done)
-        if done:
-            reward = -50
-        reward = max(min(reward, 1), -1)
-        sum_rewards += reward
-        num_plays += 1
+        for i in range(24):
+            state, reward, done, _ = env.step(actions_tg)
+            # print(done)
+            if done:
+                reward = -50
+            reward = max(min(reward, 1), -1)
+            sum_rewards += reward
+            num_plays += 1
         
     print("rollout, cumulative distance in X direction: %f" %sum_rewards)
     return sum_rewards - state[1] # This should ideally prefer walking straight

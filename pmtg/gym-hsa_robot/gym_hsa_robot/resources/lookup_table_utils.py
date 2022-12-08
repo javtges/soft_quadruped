@@ -6,7 +6,7 @@ from numpy import genfromtxt
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial.transform import Slerp
 from scipy.interpolate import NearestNDInterpolator
-
+from gym_hsa_robot.train_ars import Ellipse_TG
 
 
 class LookupTable:
@@ -109,7 +109,6 @@ class LookupTable:
         # Find the lowest and second lowest elements in the list
         
         for idx, val in enumerate(x):
-        
         
             distances = np.sqrt( np.square(self.x - x[idx]), np.square(self.y - y[idx]))
             n = np.argpartition(distances, 2)[:2]
@@ -238,7 +237,10 @@ class LookupTable:
 if __name__ == '__main__':
     
     a = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
-    n1, n2 = a.interpolate_bilinear([0], [0])
-    print("reg", n1, n2)
-    n1, n2 = a.interpolate_bilinear_scalar([0], [1])
+    etg = Ellipse_TG()
+    
+    x, y = etg.make_circle(0.0, -0.074, 0.015, 0.003, n=10)
+    n1, n2 = a.interpolate_bilinear(x, y)
+    # print("reg", n1, n2)
+    # n1, n2 = a.interpolate_bilinear_scalar([0], [1])
     print("new", n1, n2)

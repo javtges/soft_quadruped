@@ -125,7 +125,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    # policy.theta = np.load('epoch_12_0.5409237400947021.npy')
+    # policy.theta = np.load('epoch_66_1.9510125950834536.npy')
     print(policy.theta)
     
     normalizer = Normalizer(n_inputs)
@@ -154,10 +154,11 @@ if __name__ == "__main__":
         # print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
-        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_time=abs(action[10]))
-        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_time=abs(action[10]))
-        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_time=abs(action[10]))
-        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_time=abs(action[10]))
+        # print(action)
+        eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time=abs(action[10]))
+        eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time=abs(action[10]))
+        eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
+        eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
         
         # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
@@ -176,17 +177,19 @@ if __name__ == "__main__":
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
         
-        noise = np.random.normal(scale=0.01, size=len(actions_tg))
-        actions_tg += noise
+        # Remove this for the 'faster' policy
+        for i in range(24):
+            # noise = np.random.normal(scale=0.01, size=len(actions_tg))
+            # actions_tg += noise
 
-        # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
-        # Here, generate the trajectory from the trajectory generator. Use the actions
-        # env.render()
-        # print(num_plays)
-        state, reward, done, _ = env.step(actions_tg)
-        # print(reward)
-        
-        step_number += 1
+            # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
+            # Here, generate the trajectory from the trajectory generator. Use the actions
+            # env.render()
+            # print(num_plays)
+            state, reward, done, _ = env.step(actions_tg)
+            # print(reward)
+            
+            step_number += 1
         
         if step_number == 1200:
             print("Distance after 1200 simulation steps: ", state[0])
