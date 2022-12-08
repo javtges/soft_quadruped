@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # number of inputs: number of columns
     # number of outputs: number of rows
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1 - 2
     
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
@@ -140,6 +140,9 @@ if __name__ == "__main__":
         # print(traj_generators[0].width)
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
         phase = np.array([traj_generators[0].phase])
+        # print(state)
+        state = state[2:]
+        # print(state)
         state = np.concatenate((state, tg_params, phase), axis=0)
         # print(state)
         # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]

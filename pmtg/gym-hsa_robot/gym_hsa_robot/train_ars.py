@@ -423,7 +423,7 @@ if __name__ == "__main__":
     # number of inputs: number of columns
     # number of outputs: number of rows
     # n_inputs = env.observation_space.shape[0] + TG_fl.n_params*4
-    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1 #adding the input of phase here
+    n_inputs = env.observation_space.shape[0] + TG_fl.n_params + 1 - 2 #adding the input of phase here -> "-2" signifies removing the XY from the policy
     # n_outputs = env.action_space.shape[0] + 8 + TG_fl.n_params*4
     # THIS DOESN'T EVEN NEED THE ACTION SPACE TO WORK! ONLY NEEDS TRAJ PARAMS
     n_outputs = 8 + TG_fl.n_params + 1 # add 1 here to add an offset to "warp time" per paper - step size added to phase
