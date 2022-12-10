@@ -80,6 +80,10 @@ zero_transform_flag = True
 
 
 def start_csv(lut_count, filename):
+    
+    '''
+    Starts a csv file with filename
+    '''
     n = filename + str(lut_count)   
     with open(n, 'a') as f:
         writer = csv.writer(f)
@@ -88,6 +92,10 @@ def start_csv(lut_count, filename):
 
 
 def write_csv(lut_count, filename, data, R):
+    '''
+    Writes to a csv with filename
+    '''
+    
     n = filename + str(lut_count)
     # Verify the ordering of the transform and everything is right
     with open(n, 'a') as f:

@@ -4,7 +4,7 @@ import csv
 
 
 '''
-Finds the speed from a CSV
+Finds the speed from a CSV file. Plots the trajectory as well.
 '''
 
 
