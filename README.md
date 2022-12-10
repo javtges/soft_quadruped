@@ -143,3 +143,10 @@ Here is a list of all the files in this directory. In the child directories, the
 - `pipeline_test.py`: See [How to Use](#how-to-use) for details.
 - `plot.py`: Deprecated, plots copy-pasted values from command line.
 - `speed_test.py`: Deprecated, identical to `measure_speed.py`.
+
+Directories:
+
+- `plot`: Contains animations, gifs, and simple utilities for plotting results.
+- `logs`: Contains printouts from trainings, `.npy` policy files, and lookup table CSV files.
+- `cad`: Contains the CAD for the HSA testing fixture.
+- `pmtg/gym-hsa_robot/gym_hsa_robot/`: Contains the files to train the HSA robot via ARS, the Pybullet & gym environment, and all related materials.

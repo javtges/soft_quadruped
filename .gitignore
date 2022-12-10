@@ -137,3 +137,5 @@ pmtg/gym-hsa_robot/gym_hsa_robot/exp_hsa_test/
 *weights.txt
 *.javtges
 *.csv
+
+Arduino/libraries/
