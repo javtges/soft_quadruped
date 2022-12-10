@@ -125,9 +125,16 @@ Finally, I perform bilinear interpolation to go from an arbitrary set of XY valu
 ![](img/full_diagram.png)
 
 <!-- image of training results -->
-![](img/hsa_slower_optgait.gif)
+
+
+Training results in a plot such as this:
+
+
+<img src="img/training.png" width="450">
+
 
 <!-- GIF of resultant gait -->
+![](img/hsa_slower_optgait.gif)
 
 For more information, other approaches, and additional figures, see the corresponding [portfolio post](https://javtges.github.io/softquadruped/).
 
