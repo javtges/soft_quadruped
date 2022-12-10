@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import loadtxt
 import matplotlib.pyplot as plt
 import csv
 
@@ -36,12 +37,16 @@ reward = [-0.07267226158147178, -0.09097002314138847, 0.022578266299220107, 0.08
         -0.0864191193011028, -0.12282004075716602, 0.25610876664275695, 0.08734211697820232]
 
 
-x_values = np.arange(len(reward))
-reward = [float(x) for x in reward]
-print(reward)
-plt.plot(x_values, reward)
+lines = loadtxt("/home/james/final_project/src/logs/beast_6x11_ big_forplotting.txt", comments="#", delimiter="\n", unpack=False)
+print(lines)
+print(len(lines))
+
+x_values = np.arange(len(lines))
+reward = [float(x) for x in lines]
+# print(reward)
+plt.plot(x_values, lines)
 # plt.yticks(np.arange(0, 0.01, step=0.001))
-plt.title('Hand-Tuned Gait Starting Vector')
-plt.xlabel("Trial Number")
-plt.ylabel("Speed in m/s")
+plt.title('PMTG Policy Training Over Time')
+plt.xlabel("Rollout Number")
+plt.ylabel("Distance Covered over Rollout (m)")
 plt.show()
