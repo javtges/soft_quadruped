@@ -3,6 +3,10 @@ import pybullet_data
 import os
 import time
 
+'''
+Verifies that the pybullet environment works as expected.
+'''
+
 physicsClient = p.connect(p.GUI)
 f_name = os.path.join(os.path.dirname(__file__), 'hsa_turtle_test.urdf')
 plane_name = os.path.join(os.path.dirname(__file__), 'simpleplane.urdf')

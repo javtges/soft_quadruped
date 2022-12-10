@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 '''
-Makes a lookup table.
+Makes a lookup table, used in conjunction with planar_Sweep.ino. Writes the resulting table to a CSV file.
 '''
 
 at_detector = Detector(families='tag36h11',

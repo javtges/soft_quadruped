@@ -1,3 +1,7 @@
+'''
+Concatenates CSV files together.
+'''
+
 
 unique = True
 

@@ -4,6 +4,13 @@ from matplotlib import pyplot as plt
 from gym_hsa_robot.resources.trajectory_generator import make_traj, make_circle, xy_legframe_to_joints, rotate
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 
+'''
+Testing file only.
+
+Plots interpolated values from lookup table to verify functionality.
+
+'''
+
 
 # lut = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
 lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_out.csv')

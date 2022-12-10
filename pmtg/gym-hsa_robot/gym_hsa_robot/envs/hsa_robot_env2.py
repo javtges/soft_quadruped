@@ -51,6 +51,14 @@ class HSARobot_Env(gym.Env):
         self.reset()
     
     def step(self, action):
+        
+        
+        """step
+
+        Is called with env.step(). Steps the simulation, computes a reward, and returns that plus an observation.
+        
+        
+        """        
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
         # Feed action to the robot and get observation of its state
         self.robot.apply_action(action)
@@ -75,6 +83,10 @@ class HSARobot_Env(gym.Env):
         return ob, reward, self.done, dict()
     
     def reset(self):
+        
+        '''
+        Resets the simulation to the initial state. Returns an observation (of all zeros).
+        '''
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -10)
         
@@ -90,6 +102,10 @@ class HSARobot_Env(gym.Env):
         return np.array(robot_ob, dtype=np.float32)
     
     def render(self, mode='rgb_array'):
+        
+        '''
+        Renders the system. p.GUI can also be used, though this function's required to exist for a Gym environment.
+        '''
         
         view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7,0,0.05],
                                                             distance=.7,
@@ -115,9 +131,17 @@ class HSARobot_Env(gym.Env):
         
     
     def close(self):
+        
+        '''
+        Closes the simulator.
+        '''
         p.disconnect((self.client))
     
     def seed(self, seed=None):
+        
+        '''
+        Defines a seed for the simulator for more consistent operation.
+        '''
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
     

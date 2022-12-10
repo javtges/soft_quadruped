@@ -74,6 +74,10 @@ ARS Class
 class Ellipse_TG():
 
     def __init__(self):
+        
+        '''
+        Initializes the trajectory generator in the shape of an ellipse.
+        '''
         self.cycle_length = 240
         self.phase = 0
         self.center_x = 0.0
@@ -83,10 +87,20 @@ class Ellipse_TG():
         self.n_params = 2
 
     def rotate(l, n):
+        '''
+    rotates a trajectory 180 degrees out of phase.
+        '''
         return l[n:] + l[:n]
 
     def make_circle(self, x_center, y_center, r_x, r_y, n):
-
+        '''
+        Makes a trajectory following an ellipse.
+        
+        Inputs: center x, y, width, height, and number of points.
+        
+        Outputs: a list of x coordinates and a list of y coordinates
+        
+        '''
         x_cir = []
         y_cir = []
         for i in range(n):
@@ -99,6 +113,14 @@ class Ellipse_TG():
         return x_cir, y_cir
 
     def make_traj(self, offset):
+        '''
+        Makes a trajectory following an ellipse.
+        
+        Inputs: center x, y, width, height, and number of points.
+        
+        Outputs: a list of x coordinates and a list of y coordinates
+        
+        '''
         offset = offset*-1
         test = np.linspace(0, 1, self.cycle_length)
         eps_list = []
@@ -119,11 +141,18 @@ class Ellipse_TG():
         return eps_list, theta_list
 
     def joints_to_xy_legframe(self, theta, eps):
+        '''
+        Converts from [theta, eps] joint angles to xy in the legframe.
+        '''
         x = (0.07+eps)*np.sin(theta)
         y = -(0.07+eps)*np.cos(theta)
         return x, y
 
     def xy_legframe_to_joints(self, x, y):
+        '''
+        Converts from [x, y] in the legframe to joint angles.
+        '''
+        
         l = np.linalg.norm([x, y], axis=0)
         # print("l", l.shape)
         theta = np.arctan2(y, x) + 1.5707
@@ -140,8 +169,11 @@ class Ellipse_TG():
 
     def step_traj(self, width, height, res_x, res_y, step_theta=1, step_time=None):
         '''
-        Given: a width, height, find the (theta, eps) that makes sense at the given timestep
+        Given: a width, height, and set of residuals, find the (theta, eps) that makes sense at the given timestep.
+        
+        Provides for timestepping variable amounts, depending on what the policy dictates.
         '''
+        
         # OOPS
         self.width = width
         self.height = height
@@ -184,6 +216,11 @@ class Ellipse_TG():
 class Hp():
 
     def __init__(self):
+        
+        '''
+        All the hyperparameters for the system.
+        '''
+        
         self.nb_steps = 500
         self.episode_length = 1200
         self.learning_rate = 0.01
@@ -198,12 +235,21 @@ class Hp():
 class Normalizer():
 
     def __init__(self, nb_inputs):
+        
+        '''
+        
+        Initializes the normalizer, given the number of system inputs.
+        '''
         self.n = np.zeros(nb_inputs)
         self.mean = np.zeros(nb_inputs)
         self.mean_diff = np.zeros(nb_inputs)
         self.var = np.zeros(nb_inputs)
 
     def observe(self, x):
+        
+        '''
+        Sets parameters regarding the normalizer for the policy, and an input - such as mean, std, etc. This is dictated by the ARS algorithm. 
+        '''
         # print(self.mean, x)
         self.n += 1.
         last_mean = self.mean.copy()
@@ -212,6 +258,9 @@ class Normalizer():
         self.var = (self.mean_diff / self.n).clip(min=1e-2)
 
     def normalize(self, inputs):
+        '''
+        normalizes a vector of inputs and returns them as Z-scores
+        '''
         obs_mean = self.mean
         obs_std = np.sqrt(self.var)
         return (inputs - obs_mean) / obs_std
@@ -220,6 +269,11 @@ class Normalizer():
 class Policy():
 
     def __init__(self, input_size, output_size, env_name, traj_generator, args=None):
+        
+        '''
+        Creates the policy theta, a matrix of [input_size, output_size].
+        
+        '''
 
         # self.tg_AC = Ellipse_TG()
         # self.tg_BC = Ellipse_TG()
@@ -236,6 +290,10 @@ class Policy():
         print("Policy size=", self.theta.shape)
 
     def evaluate(self, input, delta, direction, hp):
+        
+        '''
+        Multiplies the input by the policy to return an output vector. If given a direction and a delta value, it applies a directional perturbation to the policy.
+        '''
         if direction is None:
             # print(self.theta.shape)
             # print(self.theta)
@@ -256,9 +314,17 @@ class Policy():
             return np.clip((self.theta - hp.noise * delta).dot(input), -1.0, 1.0)
 
     def sample_deltas(self):
+        
+        '''
+        Samples the number of deltas required by the hyperparameters. This is the set of perturbations applied to the policy.
+        '''
         return [np.random.randn(*self.theta.shape) for _ in range(hp.nb_directions)]
 
     def update(self, rollouts, sigma_r, args):
+        
+        '''
+        Uses the best directions and the learning rate to update the policy accordingly. This is essentially a form of gradient estimation, though not mathematically robust.
+        '''
         step = np.zeros(self.theta.shape)
         for r_pos, r_neg, d in rollouts:
             step += (r_pos - r_neg) * d
@@ -271,6 +337,11 @@ class Policy():
 
 
 def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
+    '''
+    Runs the system for one rollout, continually observing the policy, applying the policy to the inputs, adding Gaussian noise to the joint outputs, and then stepping the simulation.
+    
+    Returns the total reward over the timeframe.
+    '''
     state = env.reset()
     # print("state", state)  # this is an ndarray
     #print(policy.theta)
@@ -349,6 +420,20 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
 
 
 def train(env, policy, normalizer, hp, traj_generators, args):
+    
+    '''
+    Trains via ARS!
+    
+    Each epoch:
+        samples deltas to apply to the policy
+        for each set of deltas:
+            explores and gathers the rewards for each, added to the policy
+            explores and gathers the rewards for each, subtracting from the policy.
+        Then, gathers the best rewards from all the directions, and updates the policy accordingly.
+        
+        Saves each policy after each epoch as a .npy file.
+    
+    '''
 
     reward_max = 0
     for step in range(hp.nb_steps):
@@ -401,6 +486,10 @@ def train(env, policy, normalizer, hp, traj_generators, args):
 
 
 if __name__ == "__main__":
+    
+    '''
+    Sets up the trajectory generators. Two of them are diametrically opposed and 180 degrees out of phase.
+    '''
     
     np.set_printoptions(suppress=True)
 

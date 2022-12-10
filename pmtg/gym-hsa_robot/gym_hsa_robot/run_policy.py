@@ -16,7 +16,7 @@ from scipy.spatial.transform import Rotation as R
 import modern_robotics as mr
 
 '''
-Runs a policy on the robot, [closed loop]
+Runs a policy on the robot, [closed loop]! Contains much of the same code from train_ars.py, takes in a .npy file for the policy.
 '''
 
 at_detector = Detector(families='tag36h11',
@@ -68,6 +68,9 @@ now = datetime.now().strftime("%y%m%d_%H%M%S")
 filename = 'policytest_' + now
 
 def send_policy(policy):
+    '''
+    Sends the policy via serial to the robot.
+    '''
 
     print("Sending Policy", policy)
     for i in range(len(policy)):
@@ -85,17 +88,11 @@ def send_policy(policy):
     
     ser.write(str_policy.encode())
 
-def make_policies(params, eps):
-    R_list = np.zeros((t,p_count))
-    eps_list = np.zeros((t,p_count))
-    for row in range(t):
-        e = np.random.choice([-eps,0,eps], 16)
-        eps_list[row][:] = e
-        R_list[row][:] = e + params
-
-    return R_list, eps_list
-
 def write_csv(filename, R, nums):
+    
+    '''
+    Writes the observation, commands, and time to a CSV file.
+    '''
     n = filename
     # Verify the ordering of the transform and everything is right
     with open(n, 'a') as f:

@@ -1,4 +1,8 @@
-""" This verifies that Gym sees our environment """
+""" This verifies that Gym sees our environment.
+
+It produces a circular gait, visualizes it, which serves as our base gait for PMTG. Testing file only.
+
+"""
 
 import gym
 import numpy as np

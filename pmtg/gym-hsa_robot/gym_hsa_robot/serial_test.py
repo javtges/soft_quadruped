@@ -1,4 +1,9 @@
 # Importing Libraries
+
+'''
+Tests serial communication with Arduino.
+'''
+
 import serial
 import time
 arduino = serial.Serial('/dev/ttyACM0',115200,timeout=0)

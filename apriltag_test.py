@@ -10,7 +10,10 @@ from pupil_apriltags import Detector
 
 
 '''
-Tests apriltags?
+
+TEST FILE
+
+Tests apriltags, prints out the resulting transforms.
 '''
 
 at_detector = Detector(families='tag36h11',

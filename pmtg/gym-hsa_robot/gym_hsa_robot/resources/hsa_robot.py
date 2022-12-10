@@ -3,8 +3,16 @@ import os
 import math
 import numpy as np
 
+'''
+The primary pybullet implementation of the HSA robot.
+'''
+
 class HSARobot:
     def __init__(self, client):
+        
+        '''
+        Initializes the client.
+        '''
         self.client = client
         
         f_name = os.path.join(os.path.dirname(__file__), 'hsa_turtle_test.urdf')
@@ -24,7 +32,7 @@ class HSARobot:
     def apply_action(self, action):
         
         """We expect our action to be eight-dimensional: 4 coordinates of leg joints,
-        and 4 coordinates of foot joints.
+        and 4 coordinates of foot joints. This applies the action to the desired joints.
         """
         
         # May want to change this to get rid of the 0th index
@@ -58,7 +66,7 @@ class HSARobot:
 
         
     def get_observation(self):
-        """Get the position and orientation of the HSA robot.
+        """Get the position and orientation of the HSA robot. This is 5-dimensional: [x, y, r, p, y]. Only RPY is used in PMTG.
         """
         
         pos, ang = p.getBasePositionAndOrientation(self.robot, self.client)

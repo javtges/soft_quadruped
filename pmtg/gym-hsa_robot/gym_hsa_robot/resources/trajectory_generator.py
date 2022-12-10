@@ -4,6 +4,12 @@ import pybullet as p
 import time
 from gym_hsa_robot.resources.hsa_robot import HSARobot
 
+'''
+TESTING PURPOSES ONLY!
+
+Contains functions to verify the trajectory generator's functionality.
+'''
+
 def rotate(l, n):
     return l[n:] + l[:n]
 

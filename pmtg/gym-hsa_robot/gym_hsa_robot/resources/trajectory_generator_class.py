@@ -6,11 +6,17 @@ import gym_hsa_robot
 from gym_hsa_robot.resources.hsa_robot import HSARobot
 from gym_hsa_robot.resources.trajectory_generator import make_traj, make_circle, xy_legframe_to_joints, rotate
 
+''' Contains the TG class.
+
+'''
 
 
 class Ellipse_TG():
 
     def __init__(self):
+        '''
+        Initializes the trajectory generator object.
+        '''
         self.cycle_length = 240
         self.phase = 0
         self.center_x = 0.0
@@ -20,10 +26,18 @@ class Ellipse_TG():
         self.n_params = 2
 
     def rotate(l, n):
+        '''
+        Rotates an array by the defined amount.
+        '''
         return l[n:] + l[:n]
 
     def make_circle(self, x_center, y_center, r_x, r_y, n):
-
+        '''
+        Generates an ellipse.
+        
+        Inputs: center_x, center_y, width, height, and number of points
+        Outputs: list of x values, list of y values
+        '''
         x_cir = []
         y_cir = []
         for i in range(n):
@@ -36,6 +50,13 @@ class Ellipse_TG():
         return x_cir, y_cir
 
     def make_traj(self, offset):
+        '''
+        Generates an ellipse.
+        
+        Inputs: center_x, center_y, width, height, and number of points
+        Outputs: list of x values, list of y values
+        '''
+        
         offset = offset*-1
         test = np.linspace(0, 1, 240)
         eps_list = []
@@ -56,11 +77,23 @@ class Ellipse_TG():
         return eps_list, theta_list
 
     def joints_to_xy_legframe(self, theta, eps):
+        '''
+        Converts from joints to legframe.
+        
+        Inputs: theta, eps (rotation, extension)
+        Outputs: x and y value in the legframe
+        '''
         x = (0.07+eps)*np.sin(theta)
         y = -(0.07+eps)*np.cos(theta)
         return x, y
 
     def xy_legframe_to_joints(self, x, y):
+        '''
+        Converts from legframe xy to joints.
+        
+        Inputs: x and y value in the legframe
+        Outputs: theta, eps (rotation, extension)
+        '''
         l = np.linalg.norm([x, y], axis=0)
         # print("l", l.shape)
         theta = np.arctan2(y, x) + 1.5707
@@ -71,13 +104,22 @@ class Ellipse_TG():
         return theta, eps
 
     def legframe_to_footframe(self, x, y):
+        '''
+        Converts from legframe xy to footframe.
+        
+        Inputs: x and y value in the legframe
+        Outputs: x and y value in the footframe
+        '''
+        
         x_foot = x
         y_foot = y+0.07
         return x_foot, y_foot
 
     def step_traj(self, width, height, res_x=0, res_y=0, step_theta=True, step_time=None):
         '''
-        Given: a width, height, find the (theta, eps) that makes sense at the given timestep
+        Given: a width, height, and set of residuals, find the (theta, eps) that makes sense at the given timestep.
+        
+        Provides for timestepping variable amounts, depending on what the policy dictates.
         '''
         x, y = self.make_circle(0.0, -0.07, width, height, self.cycle_length)
         x = np.asarray(x) #+ res_x
@@ -111,6 +153,10 @@ class Ellipse_TG():
     
     
 if __name__ == '__main__':
+    '''
+    Tests the traj_generators.
+    
+    '''
     env = gym.make('hsa_robot-v0')
     env.reset()
     

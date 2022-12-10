@@ -6,6 +6,10 @@ from matplotlib.offsetbox import AnchoredText
 import csv
 import pandas as pd
 
+'''
+Produces a fun point-by-point animation of a lookup table, from a CSV file or a set of CSV files.
+'''
+
 
 # filename_default = "table_221018_154600_"
 # filename_default = "table_221107_212842_"

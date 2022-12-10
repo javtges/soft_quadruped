@@ -13,6 +13,12 @@ class LookupTable:
     
     def __init__(self, lookup_table_filename):
         
+        '''
+        Initializes the lookup table from a CSV file. Sets up various methods and interpolators.
+        
+        
+        '''
+        
         # with open(lookup_table_filename, 'r') as lookup:
         #     # lookup.
         #     pass
@@ -50,18 +56,31 @@ class LookupTable:
                 
         
     def interpolate_with_motor_values(self, b1, b2):
+        
+        
+        '''
+        Uses NearestNDInterpolator to go from motor values to XY coordinates. Not used at any point.
+        '''
         x = self.interp_x(b1, b2)
         y = self.interp_y(b1, b2)
         return x, y
     
     
     def interpolate_with_xy(self, x, y):
+        
+        '''
+        Uses NearestNDInterpolator to go from XY commands to motor commands. This is the old method of interpolation and is only used for testing.
+        '''
+        
         n1 = self.interp_num1(x, y)
         n2 = self.interp_num2(x, y)
         return n1, n2
     
     # Function from https://stackoverflow.com/questions/47177493/python-point-on-a-line-closest-to-third-point
     def p(self, p1, p2, p3):
+        '''
+        Finds a point p3 along the line that connects points p1 and p2
+        '''
         (x1, y1), (x2, y2), (x3, y3) = p1, p2, p3
         dx, dy = x2-x1, y2-y1
         print("dx, dy: ", dx, dy)
@@ -77,6 +96,11 @@ class LookupTable:
     
     # Function adapted from https://stackoverflow.com/questions/72031447/how-to-calculate-the-proportional-percentage-of-a-point-of-an-x-y-coordinate-wit
     def percent_along_line(self, p1, p2, p3):
+        
+        '''
+        Given p1, p2, and p3, where p3 is between p1 and p2, find the percentage of the way that p3 is from p1 to p2.
+        
+        ''' 
         (X1, Y1), (X2, Y2), (XF, YF) = p1, p2, p3
         dx = X2-X1
         dy = Y2-Y1
