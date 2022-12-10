@@ -7,6 +7,13 @@ x_values = []
 data = []
 
 
+'''
+
+
+
+'''
+
+
 # '../trial_220930_134147_opt_start'
 # trial_220930_135226_rand_start
 # with open('../trial_220930_134147_opt_start') as f:

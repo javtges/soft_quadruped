@@ -1,5 +1,7 @@
 '''
 includes all functions necessary to set up the gait environment
+
+Not used, provided by Jake Ketchum
 '''
 
 # imports

@@ -166,7 +166,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    # policy.theta = np.load('/home/james/final_project/src/epoch_66_1.9510125950834536.npy')
+    policy.theta = np.load('/home/james/final_project/src/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     
     normalizer = Normalizer(n_inputs)
     
@@ -283,10 +283,10 @@ if __name__ == "__main__":
             x_rl, y_rl = tg_arr[2].joints_to_xy_legframe(theta_rl, eps_rl)
             x_rr, y_rr = tg_arr[3].joints_to_xy_legframe(theta_rr, eps_rr)
             
-            n1_fl, n2_fl = lut.interpolate_bilinear([x_fl], [y_fl+0.07])
-            n1_fr, n2_fr = lut.interpolate_bilinear([x_fr], [y_fr+0.07])
-            n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
-            n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
+            n1_fl, n2_fl = lut.interpolate_with_xy([x_fl], [y_fl+0.07])
+            n1_fr, n2_fr = lut.interpolate_with_xy([x_fr], [y_fr+0.07])
+            n1_rl, n2_rl = lut.interpolate_with_xy([x_rl], [y_rl+0.07])
+            n1_rr, n2_rr = lut.interpolate_with_xy([x_rr], [y_rr+0.07])
             
             params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
             params = np.clip(params, 70, 150)

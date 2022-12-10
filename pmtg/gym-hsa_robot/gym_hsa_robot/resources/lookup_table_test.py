@@ -14,12 +14,21 @@ x_cir, y_cir = make_circle(0, -0.003, lut.width/2, lut.eps/2, 10)
 num1, num2 = lut.interpolate_bilinear(x_cir, y_cir)
 # num1, num2 = lut.interpolate_bilinear(x, y)
 
-x, y = lut.interpolate_with_motor_values(num1, num2)
+x, y = lut.interpolate_bilinear_xy(x_cir, y_cir)
+
+lut_y = [-1 * a for a in lut.y]
+y_cir = [-1 * a for a in y_cir]
+y = [-1 * a for a in y]
 
 print(num1, num2)
 
-plt.scatter(lut.x, lut.y)
-plt.scatter(x_cir,y_cir)
+plt.scatter(lut.x, lut_y, s=2, label="Lookup Table Values")
+plt.scatter(x_cir,y_cir, label="Desired Circle Values")
+plt.scatter(x,y, label="Interpolated Circle Values")
+plt.title("Lookup Table with Desired Circle and Interpolation")
+plt.xlabel("X Coordinate (m)")
+plt.ylabel("Y Coordinate (m)")
+plt.legend()
 # plt.scatter(x,y)
 plt.show()
 

@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+'''
+Plots Pranav's hand-tuned gait
+
+'''
+
 
 fig, (leg1, leg2, leg3, leg4) = plt.subplots(4)
 leg1.set_title("Hand-Tuned HSA Gait")

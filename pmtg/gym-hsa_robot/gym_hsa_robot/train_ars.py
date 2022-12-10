@@ -28,6 +28,16 @@ TG must have:
 Input: width, height, timestep (opt)
 Find ellipse with width, height, at certain timestep
 Return: theta, eps (leg position)
+
+
+Our policy takes the input: [Roll, Pitch, Yaw, traj_width, traj_height, phase]
+The policy output: [4x X, Y residuals, traj_width, traj_height, Phase Offset]
+
+
+Additional attribution for assistance: https://github.com/OpenQuadruped/spot_mini_mini
+
+ARS Code adapted from bullet: https://github.com/bulletphysics/bullet3/blob/2c204c49e56ed15ec5fcfa71d199ab6d6570b3f5/examples/pybullet/gym/pybullet_envs/ARS/ars.py#L125
+
 '''
 
 
@@ -60,7 +70,6 @@ ARS Class
 '''
 
 # Setting the Hyper Parameters
-
 
 class Ellipse_TG():
 

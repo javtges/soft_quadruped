@@ -13,7 +13,9 @@ Finds the speed from a CSV
 
 # lookup_table_filename = "nn_interp_v1_221121_012844.csv"
 
-lookup_table_filename = "bilinear_good_v2_221121_020558.csv"
+# bilinear_good_v2_221121_020558.csv
+
+lookup_table_filename = "/home/james/final_project/src/circular_gait_openloop3_221208_151242.csv"
 data = np.genfromtxt(lookup_table_filename, delimiter=',')
 print(data.shape)
 x = data[:,4] # this should be X

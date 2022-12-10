@@ -12,7 +12,10 @@ from pupil_apriltags import Detector
 
 
 '''
-Peter Stone, Gradient Estimation
+This is online gradient estimation, from Peter Stoner's paper
+
+Runs each candidate policy for 5 seconds, and after testing 32 of them, estimates the gradient and updates
+
 '''
 
 at_detector = Detector(families='tag36h11',
@@ -137,9 +140,9 @@ def eval_reward(tag_xyz_data, times, params):
 
 # Start streaming
 
-# cfg = pipeline.start(config)
-# profile = cfg.get_stream(rs.stream.color)
-# intr = profile.as_video_stream_profile().get_intrinsics()
+cfg = pipeline.start(config)
+profile = cfg.get_stream(rs.stream.color)
+intr = profile.as_video_stream_profile().get_intrinsics()
 
 
 print(intr)

@@ -114,23 +114,23 @@ class LookupTable:
             n = np.argpartition(distances, 2)[:2]
             
             
-            print("point 3", x[idx], y[idx])
+            # print("point 3", x[idx], y[idx])
             x1 = self.x[n[0]]
             y1 = self.y[n[0]]
             
-            print("point 1", x1, y1)
+            # print("point 1", x1, y1)
             x2 = self.x[n[1]]
             y2 = self.y[n[1]]
             
-            print("point 2", x2, y2)
+            # print("point 2", x2, y2)
             
             n1_1 = self.num1[n[0]]
             n2_1 = self.num2[n[0]]
-            print("numbers_p1", n1_1, n2_1)
+            # print("numbers_p1", n1_1, n2_1)
             
             n1_2 = self.num1[n[1]]
             n2_2 = self.num2[n[1]]
-            print("numbers_p2", n1_2, n2_2)
+            # print("numbers_p2", n1_2, n2_2)
             
             diff_n1 = n1_2 - n1_1
             diff_n2 = n2_2 - n2_1
@@ -144,24 +144,24 @@ class LookupTable:
             
             x4, y4 = self.p((x1,y1), (x2,y2), (x[idx],y[idx]))
             
-            print("point 4", x4, y4)
+            # print("point 4", x4, y4)
             t = self.percent_along_line((x1,y1), (x2,y2), (x4,y4))
             
-            print("T?", t)
+            # print("T?", t)
             
             n1a = np.clip(int(n1_1 + t * diff_n1),0,180)
             n2a = np.clip(int(n2_1 + t * diff_n2),0,180)
             
             n1.append(n1a)
             n2.append(n2a)
-            print("n1, n2", n1a, n2a)
+            # print("n1, n2", n1a, n2a)
             
         n1 = np.asarray(n1)
         n2 = np.asarray(n2)
         
         return n1, n2
     
-    def interpolate_bilinear_scalar(self, x, y):
+    def interpolate_bilinear_xy(self, x, y):
         """Given a coordinate requested by a trajectory, find the required motor commands.
         Searches the lookup table and finds the two closest points.
         Then, draws a line between them and picks the midpoint
@@ -175,35 +175,36 @@ class LookupTable:
             n1: Motor number 1
             n2: Motor number 2
         """
-        n1 = []
-        n2 = []
+        x4_ar = []
+        y4_ar = []
         # Get the list of distances from the point
         # Find the lowest and second lowest elements in the list
         
         for idx, val in enumerate(x):
         
-        
-            distances = np.sqrt( np.square(self.x - x), np.square(self.y - y))
+            distances = np.sqrt( np.square(self.x - x[idx]) + np.square(self.y - y[idx]))
+            print(distances.shape)
             n = np.argpartition(distances, 2)[:2]
+            print(n)
             
+            print("point 3 on the circle", x[idx], y[idx])
             
-            print("point 3", x, y)
             x1 = self.x[n[0]]
             y1 = self.y[n[0]]
+            print("point 1, closest to the point on the circle", x1, y1, distances[n[0]])
             
-            print("point 1", x1, y1)
             x2 = self.x[n[1]]
             y2 = self.y[n[1]]
+            print("point 2, second closest to the circle", x2, y2, distances[n[0]])
             
-            print("point 2", x2, y2)
             n1_1 = self.num1[n[0]]
             n2_1 = self.num2[n[0]]
+            # print("numbers_p1", n1_1, n2_1)
             
-            print("numbers_p1", n1_1, n2_1)
             n1_2 = self.num1[n[1]]
             n2_2 = self.num2[n[1]]
+            # print("numbers_p2", n1_2, n2_2)
             
-            print("numbers_p2", n1_2, n2_2)
             diff_n1 = n1_2 - n1_1
             diff_n2 = n2_2 - n2_1
             
@@ -216,22 +217,20 @@ class LookupTable:
             
             x4, y4 = self.p((x1,y1), (x2,y2), (x[idx],y[idx]))
             
-            print("point 4", x4, y4)
+            print("point 4, on the line between points 1 and 2", x4, y4)
+            
             t = self.percent_along_line((x1,y1), (x2,y2), (x4,y4))
-            
-            print("T?", t)
-            
+                        
             n1a = np.clip(int(n1_1 + t * diff_n1),0,180)
             n2a = np.clip(int(n2_1 + t * diff_n2),0,180)
             
-            n1.append(n1a)
-            n2.append(n2a)
-            print("n1, n2", n1a, n2a)
+            x4_ar.append(x4)
+            y4_ar.append(y4)
             
-        n1 = np.asarray(n1)
-        n2 = np.asarray(n2)
+        x4 = np.asarray(x4_ar)
+        y4 = np.asarray(y4_ar)
         
-        return n1, n2
+        return x4, y4
     
     
 if __name__ == '__main__':
