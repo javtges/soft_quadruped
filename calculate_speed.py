@@ -15,7 +15,7 @@ Finds the speed from a CSV file. Plots the trajectory as well.
 
 # bilinear_good_v2_221121_020558.csv
 
-lookup_table_filename = "/home/james/final_project/src/policytest_221213_034956_zeropolicy"
+lookup_table_filename = "/home/james/final_project/src/pranav_gait_fixed_221213_040415.csv"
 data = np.genfromtxt(lookup_table_filename, delimiter=',')
 print(data.shape)
 x = data[:,4] # this should be X

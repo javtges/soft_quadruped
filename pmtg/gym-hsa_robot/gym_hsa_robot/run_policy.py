@@ -165,7 +165,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    # policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     
     normalizer = Normalizer(n_inputs)
     
