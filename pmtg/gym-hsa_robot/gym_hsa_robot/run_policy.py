@@ -165,7 +165,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    # policy.theta = np.load('/home/james/final_project/src/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    # policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     
     normalizer = Normalizer(n_inputs)
     
@@ -299,10 +299,10 @@ if __name__ == "__main__":
             # eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
             # eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
            
-            eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
-            eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
-            eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
-            eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
+            eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
+            eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
+            eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
+            eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
 
 
             print("front left ", x_fl, y_fl, tg_arr[0].phase )
@@ -336,7 +336,7 @@ if __name__ == "__main__":
             write_csv(filename, transform, params)
             
             # This is according to the notebook
-            # send_policy(params)
+            send_policy(params)
             
             # Change this so that it sleeps the right amount of time to send commands every 0.1s
             time.sleep(0.1)

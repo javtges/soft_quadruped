@@ -20,6 +20,8 @@ x_cir, y_cir = make_circle(0, -0.004, lut.width/2, lut.eps/2, 10)
 print("x circle, y circle", x_cir, y_cir)
 
 num1, num2 = lut.interpolate_bilinear(x_cir, y_cir)
+# num1, num2 = lut.interpolate_with_xy(x_cir, y_cir)
+
 # num1, num2 = lut.interpolate_bilinear(x, y)
 
 x, y = lut.interpolate_bilinear_xy(x_cir, y_cir)
@@ -39,7 +41,3 @@ plt.ylabel("Y Coordinate (m)")
 plt.legend()
 # plt.scatter(x,y)
 plt.show()
-
-# plt.show()
-
-# plt.show()

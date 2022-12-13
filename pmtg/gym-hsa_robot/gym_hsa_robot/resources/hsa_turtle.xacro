@@ -186,7 +186,7 @@
             <parent link="base_link" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
-            <limit velocity="1.0" effort="10" lower="-0.23" upper="0.23"/>
+            <limit velocity="1.0" effort="10" lower="-0.25" upper="0.25"/>
         </joint>
 
     </xacro:macro>
@@ -199,7 +199,7 @@
             <parent link="${link_parent}" />
             <child link="${link_child}" />
                     <!-- What to set these to? -->
-            <limit velocity="1.0" effort="10" lower="-0.008" upper="0.0005"/>
+            <limit velocity="1.0" effort="10" lower="-0.008" upper="0.001"/>
         </joint>
 
     </xacro:macro>
