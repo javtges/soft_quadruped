@@ -8,10 +8,12 @@ import readchar
 import gym
 import struct
 import csv
+import matplotlib.pyplot as plt
 from datetime import datetime
 from pupil_apriltags import Detector
 from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
+from gym_hsa_robot.resources.trajectory_generator import make_circle
 from scipy.spatial.transform import Rotation as R
 import modern_robotics as mr
 
@@ -163,11 +165,42 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('/home/james/final_project/src/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    # policy.theta = np.load('/home/james/final_project/src/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     
     normalizer = Normalizer(n_inputs)
     
-    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_out.csv')
+    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
+
+    ##############################################
+    print("x radius ", lut.width/2, "y radius ", lut.eps/2)
+    x_cir, y_cir = make_circle(0, -0.074, lut.width/2, lut.eps/2, 10)
+    y_cir = [i+0.07 for i in y_cir]
+    print("x circle, y circle", x_cir, y_cir)
+
+    
+    num1, num2 = lut.interpolate_bilinear(x_cir, y_cir)
+    # num1, num2 = lut.interpolate_bilinear(x, y)
+
+    x, y = lut.interpolate_bilinear_xy(x_cir, y_cir)
+
+    lut_y = [-1 * a for a in lut.y]
+    y_cir = [-1 * a for a in y_cir]
+    y = [-1 * a for a in y]
+
+    print(num1, num2)
+
+    plt.scatter(lut.x, lut_y, s=2, label="Lookup Table Values")
+    plt.scatter(x_cir,y_cir, label="Desired Circle Values")
+    plt.scatter(x,y, label="Interpolated Circle Values")
+    plt.title("Lookup Table with Desired Circle and Interpolation")
+    plt.xlabel("X Coordinate (m)")
+    plt.ylabel("Y Coordinate (m)")
+    plt.legend()
+    # plt.scatter(x,y)
+    plt.show()
+    ##################################################
+
+
 
 
     tag_buffer = []
@@ -255,16 +288,27 @@ if __name__ == "__main__":
             normalizer.observe(state)
             state = normalizer.normalize(state)
             action = policy.evaluate(input=state, delta=None, direction=None, hp=None)
-            
+            print("action:", action)
             
             time_delta = time.time() - prev_time
             print("time delta: ", time_delta-0.1)
             prev_time = time.time()
             
-            eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time = time_delta + abs(action[10]))
-            eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time = time_delta + abs(action[10]))
-            eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
-            eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
+            # eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time = time_delta + abs(action[10]))
+            # eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time = time_delta + abs(action[10]))
+            # eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
+            # eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
+           
+            eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
+            eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
+            eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
+            eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=24)
+
+
+            print("front left ", x_fl, y_fl, tg_arr[0].phase )
+            # y_fl += 0.07
+            
+           
             # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
             # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -272,27 +316,27 @@ if __name__ == "__main__":
             # print(aaaaaaaaa)
 
             # Make sure that the order of legs here is correct
-            actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
+            # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
             
-            # Convert eps and theta to XY, then to motor commands
-            x_fl, y_fl = tg_arr[0].joints_to_xy_legframe(theta_fl, eps_fl)
-            x_fr, y_fr = tg_arr[1].joints_to_xy_legframe(theta_fr, eps_fr)
-            x_rl, y_rl = tg_arr[2].joints_to_xy_legframe(theta_rl, eps_rl)
-            x_rr, y_rr = tg_arr[3].joints_to_xy_legframe(theta_rr, eps_rr)
+            # # Convert eps and theta to XY, then to motor commands
+            # x_fl, y_fl = tg_arr[0].joints_to_xy_legframe(theta_fl, eps_fl)
+            # x_fr, y_fr = tg_arr[1].joints_to_xy_legframe(theta_fr, eps_fr)
+            # x_rl, y_rl = tg_arr[2].joints_to_xy_legframe(theta_rl, eps_rl)
+            # x_rr, y_rr = tg_arr[3].joints_to_xy_legframe(theta_rr, eps_rr)
             
-            n1_fl, n2_fl = lut.interpolate_with_xy([x_fl], [y_fl+0.07])
-            n1_fr, n2_fr = lut.interpolate_with_xy([x_fr], [y_fr+0.07])
-            n1_rl, n2_rl = lut.interpolate_with_xy([x_rl], [y_rl+0.07])
-            n1_rr, n2_rr = lut.interpolate_with_xy([x_rr], [y_rr+0.07])
+            n1_fl, n2_fl = lut.interpolate_bilinear([x_fl], [y_fl+0.07])
+            n1_fr, n2_fr = lut.interpolate_bilinear([x_fr], [y_fr+0.07])
+            n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
+            n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
             
             params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
-            params = np.clip(params, 70, 150)
-            print(params)
+            # params = np.clip(params, 70, 150)
+            # print(params)
             
             write_csv(filename, transform, params)
             
             # This is according to the notebook
-            send_policy(params)
+            # send_policy(params)
             
             # Change this so that it sleeps the right amount of time to send commands every 0.1s
             time.sleep(0.1)

@@ -15,6 +15,9 @@ def rotate(l, n):
 
 def make_circle(x_center, y_center,r_x, r_y, n):
 
+
+    print("MAKING CIRCLE, ", x_center, y_center, r_x, r_y, n)
+
     x_cir = []
     y_cir = []
     for i in range(n):

@@ -101,6 +101,7 @@ class Ellipse_TG():
         Outputs: a list of x coordinates and a list of y coordinates
         
         '''
+        print("MAKING CIRCLE, ", x_center, y_center, r_x, r_y, n)
         x_cir = []
         y_cir = []
         for i in range(n):
@@ -167,7 +168,7 @@ class Ellipse_TG():
         y_foot = y+0.07
         return x_foot, y_foot
 
-    def step_traj(self, width, height, res_x, res_y, step_theta=1, step_time=None):
+    def step_traj(self, width, height, res_x=0, res_y=0, step_theta=1, step_time=None):
         '''
         Given: a width, height, and set of residuals, find the (theta, eps) that makes sense at the given timestep.
         
@@ -191,9 +192,6 @@ class Ellipse_TG():
         # print(eps.shape, theta.shape)
         # print("phase:", self.phase)
         
-        if step_time:
-            self.phase += int( (step_time * self.cycle_length) )
-            self.phase = self.phase % (self.cycle_length-1)
             
         # if self.phase >= self.cycle_length:
         #     self.phase = self.phase - self.cycle_length
@@ -206,11 +204,18 @@ class Ellipse_TG():
         theta_out = theta[int(self.phase)]
         # print(self.phase)
         
+        x = x[int(self.phase)]
+        y = y[int(self.phase)]
+        
+        if step_time:
+            self.phase += int( (step_time * self.cycle_length) )
+            self.phase = self.phase % (self.cycle_length-1)
+    
         if step_theta or step_time:
             self.phase += step_theta
             self.phase = self.phase % (self.cycle_length-1)
 
-        return ep_out, theta_out
+        return ep_out, theta_out, x, y
 
 
 class Hp():

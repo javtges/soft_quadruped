@@ -83,14 +83,14 @@ class LookupTable:
         '''
         (x1, y1), (x2, y2), (x3, y3) = p1, p2, p3
         dx, dy = x2-x1, y2-y1
-        print("dx, dy: ", dx, dy)
+        # print("dx, dy: ", dx, dy)
         if dx != 0.0 and dy != 0.0:
             det = dx*dx + dy*dy
-            print("det: ", det)
+            # print("det: ", det)
             a = (dy*(y3-y1)+dx*(x3-x1))/det
             return x1+a*dx, y1+a*dy
         else:
-            print("points are the same!", p1)
+            # print("points are the same!", p1)
             return x1, y1
         
     
@@ -207,19 +207,19 @@ class LookupTable:
         for idx, val in enumerate(x):
         
             distances = np.sqrt( np.square(self.x - x[idx]) + np.square(self.y - y[idx]))
-            print(distances.shape)
+            # print(distances.shape)
             n = np.argpartition(distances, 2)[:2]
-            print(n)
+            # print(n)
             
-            print("point 3 on the circle", x[idx], y[idx])
+            # print("point 3 on the circle", x[idx], y[idx])
             
             x1 = self.x[n[0]]
             y1 = self.y[n[0]]
-            print("point 1, closest to the point on the circle", x1, y1, distances[n[0]])
+            # print("point 1, closest to the point on the circle", x1, y1, distances[n[0]])
             
             x2 = self.x[n[1]]
             y2 = self.y[n[1]]
-            print("point 2, second closest to the circle", x2, y2, distances[n[0]])
+            # print("point 2, second closest to the circle", x2, y2, distances[n[0]])
             
             n1_1 = self.num1[n[0]]
             n2_1 = self.num2[n[0]]
@@ -241,7 +241,7 @@ class LookupTable:
             
             x4, y4 = self.p((x1,y1), (x2,y2), (x[idx],y[idx]))
             
-            print("point 4, on the line between points 1 and 2", x4, y4)
+            # print("point 4, on the line between points 1 and 2", x4, y4)
             
             t = self.percent_along_line((x1,y1), (x2,y2), (x4,y4))
                         

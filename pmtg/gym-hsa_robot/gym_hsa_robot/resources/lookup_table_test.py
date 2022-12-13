@@ -13,10 +13,11 @@ Plots interpolated values from lookup table to verify functionality.
 
 
 # lut = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
-lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_out.csv')
+lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
 
-
-x_cir, y_cir = make_circle(0, -0.003, lut.width/2, lut.eps/2, 10)
+print("x radius ", lut.width/2, "y radius ", lut.eps/2)
+x_cir, y_cir = make_circle(0, -0.004, lut.width/2, lut.eps/2, 10)
+print("x circle, y circle", x_cir, y_cir)
 
 num1, num2 = lut.interpolate_bilinear(x_cir, y_cir)
 # num1, num2 = lut.interpolate_bilinear(x, y)
