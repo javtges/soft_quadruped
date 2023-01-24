@@ -101,7 +101,7 @@ class Ellipse_TG():
         Outputs: a list of x coordinates and a list of y coordinates
         
         '''
-        print("MAKING CIRCLE, ", x_center, y_center, r_x, r_y, n)
+        # print("MAKING CIRCLE, ", x_center, y_center, r_x, r_y, n)
         x_cir = []
         y_cir = []
         for i in range(n):

@@ -36,8 +36,28 @@ plt.scatter(lut.x, lut_y, s=2, label="Lookup Table Values")
 plt.scatter(x_cir,y_cir, label="Desired Circle Values")
 plt.scatter(x,y, label="Interpolated Circle Values")
 plt.title("Lookup Table with Desired Circle and Interpolation")
+
+x1, y1 = lut.search_lut_by_motor_values(90, 100)
+x2, y2 = lut.search_lut_by_motor_values(100, 110)
+print(x1, y1, x2, y2)
+plt.scatter(x1, -1*y1, label="90, 100")
+plt.scatter(x2, -1*y2, label="100, 110")
+c,d = lut.interpolate_with_motors(94, 101)
+plt.scatter(c,-1*d, label="interpolated 94, 101")
+print(c,d)
+
+
 plt.xlabel("X Coordinate (m)")
 plt.ylabel("Y Coordinate (m)")
 plt.legend()
 # plt.scatter(x,y)
 plt.show()
+
+
+a, b = lut.p((90,100), (100,110), (94,101))
+print(a,b)
+t = lut.percent_along_line((90,100), (100,110), (a,b))
+print(t)
+
+c,d = lut.search_lut_by_motor_values(90, 100)
+print(c,d)

@@ -112,6 +112,15 @@ class LookupTable:
             return t
         else:
             return 0
+        
+    def search_lut_by_motor_values(self, n1, n2):
+        '''
+        Given n1, n2, find the XY values in the lookup table
+        '''
+        for line in self.data:
+            if line[0] == n1 and line[2] == n2:
+                
+                return line[4],line[6]
     
     def interpolate_bilinear(self, x, y):
         """Given a coordinate requested by a trajectory, find the required motor commands.
@@ -255,6 +264,45 @@ class LookupTable:
         y4 = np.asarray(y4_ar)
         
         return x4, y4
+    
+    def interpolate_with_motors(self, n1, n2):
+        
+        '''
+        Given two motor commands n1 and n2, find the corresponding XY values in the legframe.
+        
+        So, we need to interpolate somehow. How to do this?
+        
+        N1 and N2 map to X and Y
+        
+        180, 180 -> Full extended
+        40, 40 -> Full contracted
+        180, 40 -> Left(?)
+        40, 180 -> Right(?)
+        
+        Find high and low for n1,n2 pairs. Ex: 94,101 becomes (90,100) and (100,110)
+        Find the two (x,y) pairs for the higher and lower pairs
+        
+        '''
+        n1_low = 10 * int(n1/10)
+        n1_high = n1_low + 10
+        n1_r = n1 % 10
+        
+        n2_low = 10 * int(n2/10)
+        n2_high = n2_low + 10
+        n2_r = n2 % 10
+        
+        print(n1_low, n2_low, n1_high, n2_high)
+        
+        x_low, y_low = self.search_lut_by_motor_values(n1_low, n2_low)
+        x_high, y_high = self.search_lut_by_motor_values(n1_high, n2_high)
+        
+        a, b = self.p((n1_low,n2_low), (n1_high,n2_high), (n1,n2))
+        t = self.percent_along_line((n1_low,n2_low), (n1_high,n2_high), (a,b))
+
+        x = x_low + t * (x_high - x_low)
+        y = y_low + t * (y_high - y_low)
+        
+        return x, y
     
     
 if __name__ == '__main__':

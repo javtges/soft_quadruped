@@ -21,6 +21,9 @@ import modern_robotics as mr
 Runs a policy on the robot, [closed loop]! Contains much of the same code from train_ars.py, takes in a .npy file for the policy.
 '''
 
+np.set_printoptions(suppress=True, formatter={'float_kind':'{:f}'.format})
+
+
 at_detector = Detector(families='tag36h11',
                        nthreads=1,
                        quad_decimate=1.0,
@@ -82,11 +85,11 @@ def send_policy(policy):
             policy[i] = 180
         policy[i] = int(policy[i])
     # policy = np.multiply(policy, 100) # Move decimal place 3 to the left
-    print("Intermediate Policy", policy)
+    # print("Intermediate Policy", policy)
     # policy = [int(x)%10000 for x in policy] # always only 4 digits long
     policy = [str(x).zfill(4) for x in policy]
     str_policy = str(policy)+'\n'
-    print("Updated Policy", str_policy)
+    # print("Updated Policy", str_policy)
     
     ser.write(str_policy.encode())
 
@@ -165,7 +168,9 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
+    # policy.theta = np.random.random((11,6))
+    
     
     normalizer = Normalizer(n_inputs)
     
@@ -173,7 +178,7 @@ if __name__ == "__main__":
 
     ##############################################
     print("x radius ", lut.width/2, "y radius ", lut.eps/2)
-    x_cir, y_cir = make_circle(0, -0.074, lut.width/2, lut.eps/2, 10)
+    x_cir, y_cir = make_circle(0, -0.074, 0.015, 0.003, 10)
     y_cir = [i+0.07 for i in y_cir]
     print("x circle, y circle", x_cir, y_cir)
 
@@ -242,7 +247,7 @@ if __name__ == "__main__":
             r = R.from_matrix(tag_R)
             q = r.as_quat()
             
-            print(q)
+            # print(q)
             # euler = r.as_euler('xyz', degrees=False)
             
             camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
@@ -254,19 +259,19 @@ if __name__ == "__main__":
                 eye = np.eye(3)
                 eye_r = R.from_matrix(eye)
                 euler = eye_r.as_euler("xyz", degrees=False)
-                print("AAAAAAA", euler)
-                print("first transform: ", zero_to_cam)
+                # print("AAAAAAA", euler)
+                # print("first transform: ", zero_to_cam)
                 first_frame = False
             else:
                 transform = zero_to_cam @ camera_to_tag # Zero to tag transform?
-                print("zero to tag: ", transform)
+                # print("zero to tag: ", transform)
                 tag_R2 = transform[0:3, 0:3]
-                print(tag_R2)
+                # print(tag_R2)
                 # r2 = R.from_matrix(tag_R2)
                 # res = tag_R2 @ tag_R
                 res = R.from_matrix(tag_R2)
                 euler = res.as_euler("XYZ", degrees=False)
-                print("BBBBB", euler)
+                print("Euler Angles, Relative:", euler)
                 
 
             # Make a measurement in the format of the environment's observation space
@@ -288,24 +293,24 @@ if __name__ == "__main__":
             normalizer.observe(state)
             state = normalizer.normalize(state)
             action = policy.evaluate(input=state, delta=None, direction=None, hp=None)
-            print("action:", action)
+            # print("action:", action)
             
             time_delta = time.time() - prev_time
-            print("time delta: ", time_delta-0.1)
+            # print("time delta: ", time_delta-0.1)
             prev_time = time.time()
             
-            # eps_fl, theta_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time = time_delta + abs(action[10]))
-            # eps_fr, theta_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time = time_delta + abs(action[10]))
-            # eps_rl, theta_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
-            # eps_rr, theta_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time = time_delta + abs(action[10]))
+            eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time = time_delta + abs(action[10]))
            
-            eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
-            eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
-            eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
-            eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.01673012561103667, height=0.0033193040378613837, step_theta=48)
+            # eps_fl, theta_fl, x_fl, y_fl = tg_arr[0].step_traj(width=0.015, height=0.003, step_theta=24)
+            # eps_fr, theta_fr, x_fr, y_fr = tg_arr[1].step_traj(width=0.015, height=0.003, step_theta=24)
+            # eps_rl, theta_rl, x_rl, y_rl = tg_arr[2].step_traj(width=0.015, height=0.003, step_theta=24)
+            # eps_rr, theta_rr, x_rr, y_rr = tg_arr[3].step_traj(width=0.015, height=0.003, step_theta=24)
 
 
-            print("front left ", x_fl, y_fl, tg_arr[0].phase )
+            # print("front left ", x_fl, y_fl, tg_arr[0].phase )
             # y_fl += 0.07
             
            
@@ -330,9 +335,11 @@ if __name__ == "__main__":
             n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
             
             params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
+           
+            params = [round(90 + (n - 90)*0.8) for n in params]
             # params = np.clip(params, 70, 150)
             # print(params)
-            
+            print("transform:", transform[0][3], transform[1][3], transform[2][3])
             write_csv(filename, transform, params)
             
             # This is according to the notebook
