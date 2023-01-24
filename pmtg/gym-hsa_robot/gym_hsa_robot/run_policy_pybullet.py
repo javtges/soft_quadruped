@@ -2,14 +2,14 @@ import serial
 import cv2
 import pyrealsense2 as rs
 import numpy as np
-import yaml
+# import yaml
 import time
 import readchar
 import gym
 import struct
 import csv
 from datetime import datetime
-from pupil_apriltags import Detector
+# from pupil_apriltags import Detector
 from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer, Hp
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 from scipy.spatial.transform import Rotation as R
@@ -106,7 +106,7 @@ if __name__ == "__main__":
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
     # policy.theta = np.load('epoch_66_1.9510125950834536.npy')
-    policy.theta = np.load('/home/james/final_project/src/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     print(policy.theta)
     
     normalizer = Normalizer(n_inputs)

@@ -283,12 +283,12 @@ class LookupTable:
         Find the two (x,y) pairs for the higher and lower pairs
         
         '''
-        n1_low = 10 * int(n1/10)
-        n1_high = n1_low + 10
+        n1_low = max(10 * int(n1/10), 0)
+        n1_high = min(n1_low + 10, 180)
         n1_r = n1 % 10
         
-        n2_low = 10 * int(n2/10)
-        n2_high = n2_low + 10
+        n2_low = max(10 * int(n2/10), 0)
+        n2_high = min(n2_low + 10, 180)
         n2_r = n2 % 10
         
         print(n1_low, n2_low, n1_high, n2_high)
