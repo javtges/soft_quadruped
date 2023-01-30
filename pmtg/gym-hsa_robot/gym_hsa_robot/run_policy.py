@@ -2,7 +2,7 @@ import serial
 import cv2
 import pyrealsense2 as rs
 import numpy as np
-import yaml
+#import yaml
 import time
 import readchar
 import gym
@@ -168,13 +168,14 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
+    policy.theta = np.load('/home/tommy/tommy-dev/soft_quadruped/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
     # policy.theta = np.random.random((11,6))
+    # /home/james/final_project/src/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy
     
     
     normalizer = Normalizer(n_inputs)
     
-    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
+    lut = LookupTable(lookup_table_filename='/home/tommy/tommy-dev/soft_quadruped/lookup_table_unique2.csv')
 
     ##############################################
     print("x radius ", lut.width/2, "y radius ", lut.eps/2)
@@ -238,41 +239,73 @@ if __name__ == "__main__":
         tags = at_detector.detect(gray, estimate_tag_pose=True, camera_params=[intr.fx, intr.fy, intr.ppx, intr.ppy], tag_size=0.055)
 
         if len(tags) != 0:
-            print("found tag")
-            tag_xyz = tags[0].pose_t
-            tag_R = tags[0].pose_R
-            tag_xyz = np.array(tag_xyz)
-            tag_R = np.array(tag_R)
+
+            print("found tags")
+            print("tag_0 -> robot tag")
+            print("tag_1 -> tabel tag")
+
+            tag_xyz_0 = tags[0].pose_t
+            tag_R_0 = tags[0].pose_R
+            tag_xyz_0 = np.array(tag_xyz_0)
+            tag_R_0 = np.array(tag_R_0)
+
+            tag_xyz_1 = tags[1].pose_t
+            tag_R_1 = tags[1].pose_R
+            tag_xyz_1 = np.array(tag_xyz_1)
+            tag_R_1 = np.array(tag_R_1)
+
             
-            r = R.from_matrix(tag_R)
-            q = r.as_quat()
+            # print("==================TAG 0====================")
+            # print("tag_xyz_0: \n", tag_xyz_0)
+            # print("tag_R_0: \n", tag_R_0)
+
+            # print("==================TAG 1====================")
+            # print("tag_xyz_1: \n", tag_xyz_1)
+            # print("tag_R_1: \n", tag_R_1)
+            # print(">>>>>")
+            
+            # r = R.from_matrix(tag_R)
+            # q = r.as_quat()
             
             # print(q)
             # euler = r.as_euler('xyz', degrees=False)
             
-            camera_to_tag = mr.RpToTrans(tag_R, tag_xyz)
-            if first_frame:
-                zero_to_cam = mr.TransInv(camera_to_tag)
-                q_first = q
-                transform = identity
-                e = R.from_quat(q_first)
-                eye = np.eye(3)
-                eye_r = R.from_matrix(eye)
-                euler = eye_r.as_euler("xyz", degrees=False)
-                # print("AAAAAAA", euler)
-                # print("first transform: ", zero_to_cam)
-                first_frame = False
-            else:
-                transform = zero_to_cam @ camera_to_tag # Zero to tag transform?
-                # print("zero to tag: ", transform)
-                tag_R2 = transform[0:3, 0:3]
-                # print(tag_R2)
-                # r2 = R.from_matrix(tag_R2)
-                # res = tag_R2 @ tag_R
-                res = R.from_matrix(tag_R2)
-                euler = res.as_euler("XYZ", degrees=False)
-                print("Euler Angles, Relative:", euler)
-                
+            #tag_0 -> robot tag
+            print("tag_0 -> robot tag")
+            camera_to_tag_0 = mr.RpToTrans(tag_R_0, tag_xyz_0)
+
+            #tag_1 -> tabel tag
+            print("tag_1 -> tabel tag")
+            camera_to_tag_1 = mr.RpToTrans(tag_R_1, tag_xyz_1)
+
+            r = R.from_matrix(tag_R_0)
+            q = r.as_quat()
+            euler = r.as_euler('xyz', degrees=False)
+
+
+
+            # if first_frame:
+            #     zero_to_cam = mr.TransInv(camera_to_tag)
+            #     q_first = q
+            #     transform = identity
+            #     e = R.from_quat(q_first)
+            #     eye = np.eye(3)
+            #     eye_r = R.from_matrix(eye)
+            #     euler = eye_r.as_euler("xyz", degrees=False)
+            #     # print("AAAAAAA", euler)
+            #     # print("first transform: ", zero_to_cam)
+            #     first_frame = False
+        
+            transform = (mr.TransInv(camera_to_tag_1)) @ camera_to_tag_0 # Zero to tag transform?
+            print("zero to tag: \n", transform)
+            tag_R2 = transform[0:3, 0:3]
+            # print(tag_R2)
+            # r2 = R.from_matrix(tag_R2)
+            # res = tag_R2 @ tag_R
+            res = R.from_matrix(tag_R2)
+            euler = res.as_euler("XYZ", degrees=False)
+            print("Euler Angles, Relative:", euler)
+            
 
             # Make a measurement in the format of the environment's observation space
             # observation = np.zeros((policy.output_size,))
