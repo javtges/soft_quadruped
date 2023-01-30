@@ -117,6 +117,13 @@ class LookupTable:
         '''
         Given n1, n2, find the XY values in the lookup table
         '''
+        
+        if n1 < min(self.num1):
+            n1 = min(self.num1)
+            
+        if n2 < min(self.num2):
+            n2 = min(self.num2)
+            
         for line in self.data:
             if line[0] == n1 and line[2] == n2:
                 
@@ -291,7 +298,7 @@ class LookupTable:
         n2_high = min(n2_low + 10, 180)
         n2_r = n2 % 10
         
-        print(n1_low, n2_low, n1_high, n2_high)
+        # print(n1_low, n2_low, n1_high, n2_high)
         
         x_low, y_low = self.search_lut_by_motor_values(n1_low, n2_low)
         x_high, y_high = self.search_lut_by_motor_values(n1_high, n2_high)

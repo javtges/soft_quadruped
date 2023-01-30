@@ -367,7 +367,7 @@ if __name__ == "__main__":
             n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
             n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
             
-            params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n2_rr[0], n2_rr[0]]
+            params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n1_rr[0], n2_rr[0]]
            
             params = [round(90 + (n - 90)*0.8) for n in params]
             # params = np.clip(params, 70, 150)
