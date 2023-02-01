@@ -33,9 +33,9 @@ at_detector = Detector(families='tag36h11',
                        debug=0)
 
 try:
-    ser = serial.Serial('/dev/ttyACM1',115200,timeout=0.1)
+    ser = serial.Serial('/dev/ttyACM1',1000000,timeout=0.1)
 except:                      
-    ser = serial.Serial('/dev/ttyACM0',115200,timeout=0.1)
+    ser = serial.Serial('/dev/ttyACM0',1000000,timeout=0.1)
 
 print('Opening port: ')
 print(ser.name)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
-    policy.theta = np.load('/home/tommy/tommy-dev/soft_quadruped/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
+    #policy.theta = np.load('/home/tommy/tommy-dev/soft_quadruped/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
     # policy.theta = np.random.random((11,6))
     # /home/james/final_project/src/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy
     

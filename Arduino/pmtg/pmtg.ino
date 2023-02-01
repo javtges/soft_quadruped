@@ -16,7 +16,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
 uint8_t servonum = 0;
-noDelay gait(300);
+// noDelay gait(300);
 uint8_t count = 1;
 
 
@@ -30,7 +30,7 @@ uint8_t inverse(uint8_t num){
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(1000000);
   Serial.setTimeout(1);
 
   pwm.begin();
@@ -93,6 +93,8 @@ void loop() {
   pulselen = map(inverse(Ary[6]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(13, 0, pulselen);
   pulselen = map(Ary[7], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(14, 0, pulselen);
   pulselen = map(inverse(Ary[7]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(15, 0, pulselen);
+
+  
   
 }
   
