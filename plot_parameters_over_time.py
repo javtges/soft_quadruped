@@ -15,15 +15,21 @@ import csv
 import pandas as pd
 import gym
 import time
+import datetime
 from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 from gym_hsa_robot.resources.trajectory_generator import make_circle
 from scipy.spatial.transform import Rotation as R
 
 
+
+def strtime_to_unix(t):
+    return time.mktime(datetime.datetime.strptime(t,"%y%m%d_%H%M%S").timetuple())
+
 lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
 # trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_075425_zero', delimiter=',')
 trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_074207_trained_30s', delimiter=',')
+data_strings = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_074207_trained_30s', delimiter=',', dtype=str)
 
 
 n1_list_fl = trial_data[:,16]
@@ -39,6 +45,7 @@ n2_list_rl = trial_data[:,21]
 
 n1_list_rr = trial_data[:,22]
 n2_list_rr = trial_data[:,23]
+timestamps = data_strings[:,24]
 
 print(n1_list_rr)
 print(n2_list_rr)
@@ -176,6 +183,55 @@ for i in range(len(roll)):
     
 actions = np.asarray(actions)
 print("##########################################################")
+
+
+
+total_time = strtime_to_unix(timestamps[-1]) - strtime_to_unix(timestamps[0])
+time_list = np.linspace(0, total_time, len(timestamps))
+
+print(time_list)
+
+
+fig, axs = plt.subplots(6,2)
+
+axs[0,0].plot(time_list, actions[:,0])
+axs[0,0].set_title("width")
+
+axs[0,1].plot(time_list, actions[:,1])
+axs[0,1].set_title("height")
+
+axs[1,0].plot(time_list, actions[:,2])
+axs[1,0].set_title("FL_X")
+
+axs[1,1].plot(time_list, actions[:,3])
+axs[1,1].set_title("FL_Y")
+
+axs[2,0].plot(time_list, actions[:,4])
+axs[2,0].set_title("FR_X")
+
+axs[2,1].plot(time_list, actions[:,5])
+axs[2,1].set_title("FR_Y")
+
+axs[3,0].plot(time_list, actions[:,6])
+axs[3,0].set_title("RL_X")
+
+axs[3,1].plot(time_list, actions[:,7])
+axs[3,1].set_title("RL_Y")
+
+axs[4,0].plot(time_list, actions[:,8])
+axs[4,0].set_title("RR_X")
+
+axs[4,1].plot(time_list, actions[:,9])
+axs[4,1].set_title("RR_Y")
+
+axs[5,0].plot(time_list, abs(actions[:,10]))
+axs[5,0].set_title("time delta")
+
+
+
+
+
+plt.show()
 
 
 # print(actions[:,3])
