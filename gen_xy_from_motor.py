@@ -10,7 +10,9 @@ import pandas as pd
 
 
 lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
-trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_075425_zero', delimiter=',')
+# trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_075425_zero', delimiter=',')
+trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_074207_trained_30s', delimiter=',')
+
 
 n1_list_fl = trial_data[:,16]
 # print(n1_list_fl)
@@ -114,7 +116,9 @@ intensity_rr = []
 intensity = []
 
 iterations = len(n1_list_fl)
-t_vals = np.linspace(0,1, iterations)
+print(iterations)
+t_vals = np.linspace(0,1, (iterations-1))
+print(len(t_vals))
 n = 0
 
 
@@ -137,6 +141,7 @@ scatter_rr = ax_rr.scatter(x_vals_rr,y_vals_rr, c=[], cmap=cmap, vmin=0,vmax=1)
 def get_new_vals():
     # update this to get all 8 new values
     global n
+    # print("line:", n)
     
     x_fl = fl_x[n]
     y_fl = fl_y[n]
@@ -203,7 +208,7 @@ def update(t):
      
      
      
-ani = animation.FuncAnimation(fig, update, frames=t_vals,interval=50)
+ani = animation.FuncAnimation(fig, update, frames=t_vals, interval=50)
 # filename_out = filename + "points.gif"
 # ani.save(filename_out, writer='imagemagick')
 
