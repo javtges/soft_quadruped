@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # lookup_table_filename = "/home/james/final_project/src/policytest_221218_161619_epoch15_broken"
 # lookup_table_filename = "/home/james/final_project/src/policytest_221218_074039_zero_30s"
-lookup_table_filename = "/home/james/final_project/src/policytest_221218_074039_zero_30s"
+lookup_table_filename = "/home/james/final_project/src/experiment_data/policytest_221218_074207_trained_30s"
 
 data = np.genfromtxt(lookup_table_filename, delimiter=',')
 
