@@ -13,6 +13,7 @@ from datetime import datetime
 from gym_hsa_robot.train_ars import Policy, Ellipse_TG, Normalizer, Hp
 from gym_hsa_robot.resources.lookup_table_utils import LookupTable
 from scipy.spatial.transform import Rotation as R
+import matplotlib.pyplot as plt
 
 '''
 Runs a policy on the robot, in pybullet. Takes in a .npy file for the policy.
@@ -59,6 +60,10 @@ def eval_reward(tag_xyz_data, times, params):
    
 if __name__ == "__main__": 
     print("Evaluating Policy...")
+    np.set_printoptions(suppress=True, formatter={'float_kind':'{:f}'.format})
+    
+    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
+
     
     '''Pseudocode:
  
@@ -116,51 +121,57 @@ if __name__ == "__main__":
     state = env.reset()
     step_number = 0
     
+    action_list = []
+    state_list = []
+    
     while True:
 
-        # print(traj_generators[0].width)
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
+        
         phase = np.array([traj_generators[0].phase])
-        # print(state)
+        state[4] *= 0.1
+        print("X:", state[0], "Y:", state[1], "roll:", state[2], "pitch:", state[3], "yaw:", state[4])
+        state_list.append(state)
+        
         state = state[2:]
-        # print(state)
+        
+        # state vector, input to policy, is "roll, pitch, yaw, width, height, phase"
         state = np.concatenate((state, tg_params, phase), axis=0)
-        # print(state)
-        # Our state should be 15-dimensional: [x_pos, y_pos, roll, pitch, yaw, x_vel, y_vel, fl_w, fl_h, fr_w, fr_h, rl_w, rl_h, rr_w, rr_h]
-        # print("the system's state", state, "length:", len(state))
+
         # Augment this to include the variables we need from the TG
         normalizer.observe(state)
         
         # THIS DOESN'T PROPERLY APPLY NOISE!!!
         state = normalizer.normalize(state)
+        
         action = policy.evaluate(state, None, None, hp)
 
-        # print("action", action)
-        # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
+        # print("old phase, step_time", traj_generators[0].phase, action[10])
         
-        # print(action)
-        # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time=abs(action[10]))
-        # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time=abs(action[10]))
-        # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
-        # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
+        eps_fl, theta_fl, x_fl, y_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time=abs(action[10]))
+        eps_fr, theta_fr, x_fr, y_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time=abs(action[10]))
+        eps_rl, theta_rl, x_rl, y_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
+        eps_rr, theta_rr, x_rr, y_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
         
-        # eps_fr, theta_fr = traj_generators[1].step_traj(width=0.02, height=0.01, res_x=action[6], res_y=action[7])
-        # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.02, height=0.01, res_x=action[2], res_y=action[3])
-        # eps_rl, theta_rl = traj_generators[2].step_traj(width=0.02, height=0.01, res_x=action[10], res_y=action[11])
-        # eps_rr, theta_rr = traj_generators[3].step_traj(width=0.02, height=0.01, res_x=action[14], res_y=action[15])
-
-
-        # print(action[10])
-        # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
+        # print("new phase", traj_generators[0].phase)
 
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
-        # Sample from all 4 trajectory generators, make an action from all of them
-        # print(aaaaaaaaa)
 
         # Make sure that the order of legs here is correct
-        # actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
-        actions_tg = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
+        # actions_tg = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
+        n1_fl, n2_fl = lut.interpolate_bilinear([x_fl], [y_fl+0.07])
+        n1_fr, n2_fr = lut.interpolate_bilinear([x_fr], [y_fr+0.07])
+        n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
+        n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
+        
+        params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n1_rr[0], n2_rr[0]]
+        
+        params = [round(90 + (n - 90)*0.8) for n in params]
+        # print(params)
+        
+        action_list.append(action)
         
         # Remove this for the 'faster' policy
         for i in range(24):
@@ -172,10 +183,73 @@ if __name__ == "__main__":
             # env.render()
             # print(num_plays)
             state, reward, done, _ = env.step(actions_tg)
-            print("state", state)
+            # print("state", state)
             # print(reward)
             
             step_number += 1
         
         if step_number == 1200:
             print("Distance after 1200 simulation steps: ", state[0])
+            
+        if step_number > 8000:
+            print("Distance after ", step_number, " simulation steps: ", state[0])
+
+            break
+        
+    actions = np.asarray(action_list)
+    states = np.asarray(state_list)
+    print("##########################################################")
+
+    time_list = np.linspace(0, step_number, len(actions))
+
+
+    fig, axs = plt.subplots(6,2)
+
+    axs[0,0].plot(time_list, actions[:,0])
+    axs[0,0].set_title("width")
+
+    axs[0,1].plot(time_list, actions[:,1])
+    axs[0,1].set_title("height")
+
+    axs[1,0].plot(time_list, actions[:,2])
+    axs[1,0].set_title("FL_X")
+
+    axs[1,1].plot(time_list, actions[:,3])
+    axs[1,1].set_title("FL_Y")
+
+    axs[2,0].plot(time_list, actions[:,4])
+    axs[2,0].set_title("FR_X")
+
+    axs[2,1].plot(time_list, actions[:,5])
+    axs[2,1].set_title("FR_Y")
+
+    axs[3,0].plot(time_list, actions[:,6])
+    axs[3,0].set_title("RL_X")
+
+    axs[3,1].plot(time_list, actions[:,7])
+    axs[3,1].set_title("RL_Y")
+
+    axs[4,0].plot(time_list, actions[:,8])
+    axs[4,0].set_title("RR_X")
+
+    axs[4,1].plot(time_list, actions[:,9])
+    axs[4,1].set_title("RR_Y")
+
+    axs[5,0].plot(time_list, abs(actions[:,10]))
+    axs[5,0].set_title("time delta")
+
+    plt.show()
+    
+    ax1 = plt.subplot(211)
+    ax1.plot(states[:,2], label="roll")
+    ax1.plot(states[:,3], label="pitch")
+    ax1.plot(states[:,4], label="yaw")
+    ax1.legend()
+
+    ax2 = plt.subplot(212)
+    ax2.plot(states[:,0], label="x")
+    ax2.plot(states[:,1], label="y")
+    ax2.legend()
+
+    plt.show()
+

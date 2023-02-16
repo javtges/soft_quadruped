@@ -82,7 +82,7 @@ class Ellipse_TG():
         self.phase = 0
         self.center_x = 0.0
         self.center_y = -0.074
-        self.width = 0.02
+        self.width = 0.02 # May need to adjust these
         self.height = 0.004
         self.n_params = 2
 
@@ -170,7 +170,7 @@ class Ellipse_TG():
 
     def step_traj(self, width, height, res_x=0, res_y=0, step_theta=1, step_time=None):
         '''
-        Given: a width, height, and set of residuals, find the (theta, eps) that makes sense at the given timestep.
+        Given: a width, height, and set of residuals, find the (theta, eps) and the XY coords. that makes sense at the given timestep.
         
         Provides for timestepping variable amounts, depending on what the policy dictates.
         '''
@@ -182,38 +182,22 @@ class Ellipse_TG():
         x, y = self.make_circle(0.0, -0.074, width, height, self.cycle_length)
         x = np.asarray(x) + res_x
         y = np.asarray(y) + res_y
-        
-        
-        # for idx, val in enumerate(x):
-        #     eps, theta = self.xy_legframe_to_joints(x[idx], y[idx])
             
         theta, eps = self.xy_legframe_to_joints(x, y)
-
-        # print(eps.shape, theta.shape)
-        # print("phase:", self.phase)
-        
-            
-        # if self.phase >= self.cycle_length:
-        #     self.phase = self.phase - self.cycle_length
-        # if self.phase < 0:
-        #     self.phase = 0
-        
-        # self.phase = np.clip(self.phase, 0, self.cycle_length-1)
         
         ep_out = eps[int(self.phase)]
         theta_out = theta[int(self.phase)]
-        # print(self.phase)
+        
+        if step_time:
+            self.phase += int( (step_time * self.cycle_length) )
+            self.phase = self.phase % self.cycle_length
         
         x = x[int(self.phase)]
         y = y[int(self.phase)]
         
-        if step_time:
-            self.phase += int( (step_time * self.cycle_length) )
-            self.phase = self.phase % (self.cycle_length-1)
-    
-        if step_theta or step_time:
+        if step_theta:
             self.phase += step_theta
-            self.phase = self.phase % (self.cycle_length-1)
+            self.phase = self.phase % self.cycle_length
 
         return ep_out, theta_out, x, y
 
@@ -421,7 +405,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
             num_plays += 1
         
     print("rollout, cumulative distance in X direction: %f" %sum_rewards)
-    return sum_rewards - state[1] # This should ideally prefer walking straight
+    return sum_rewards - abs(state[1]) # This should ideally prefer walking straight
 
 
 def train(env, policy, normalizer, hp, traj_generators, args):

@@ -87,6 +87,7 @@ def send_policy(policy):
     # policy = np.multiply(policy, 100) # Move decimal place 3 to the left
     # print("Intermediate Policy", policy)
     # policy = [int(x)%10000 for x in policy] # always only 4 digits long
+    # 180 -> 00180
     policy = [str(x).zfill(4) for x in policy]
     str_policy = str(policy)+'\n'
     # print("Updated Policy", str_policy)
@@ -311,6 +312,7 @@ if __name__ == "__main__":
             # Make a measurement in the format of the environment's observation space
             # observation = np.zeros((policy.output_size,))
             
+            # starts off as roll, pitch, yaw
             state = np.array([euler[0], euler[1], euler[2]]) # MAKE THIS THE POS, ORI, VEL -> changed to orientation only
                         
             # Evaluate the policy to get an action
@@ -318,7 +320,10 @@ if __name__ == "__main__":
             tg_params = np.array([tg_arr[0].width, tg_arr[0].height], dtype=float)
             phase = np.array([tg_arr[0].phase])
 
+
+            # add onto state the parameters of the trajectory generators, and the phase of the gait
             state = np.concatenate((state, tg_params, phase), axis=0)
+            
             # print("STATE BEFORE", state)
             # Augment this to include the variables we need from the TG
             

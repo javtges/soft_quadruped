@@ -40,9 +40,10 @@ for f in data:
     
     
 ax1 = plt.subplot(211)
-ax1.plot(roll)
-ax1.plot(pitch)
-ax1.plot(yaw)
+ax1.plot(roll, label="roll")
+ax1.plot(pitch, label="pitch")
+ax1.plot(yaw, label="yaw")
+ax1.legend()
 
 ax2 = plt.subplot(212)
 ax2.plot(x)
