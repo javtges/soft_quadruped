@@ -1,6 +1,8 @@
 import numpy as np
 import csv
 import time
+import serial
+
 
 def send_policy(policy):
     '''
@@ -35,7 +37,7 @@ print(ser.name)
 
 # lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
 # trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_075425_zero', delimiter=',')
-trial_data = np.genfromtxt('/home/james/final_project/src/experiment_data/policytest_221218_074207_trained_30s', delimiter=',')
+trial_data = np.genfromtxt('/home/tommy/tommy-dev/soft_quadruped/policyreplay_circulargait interpolate python try', delimiter=',')
 
 
 # n1_list_fl = trial_data[:,16]
