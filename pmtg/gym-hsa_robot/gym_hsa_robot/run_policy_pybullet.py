@@ -111,8 +111,9 @@ if __name__ == "__main__":
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
     # policy.theta = np.load('epoch_66_1.9510125950834536.npy')
-    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    # policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     print(policy.theta)
+    step = 24
     
     normalizer = Normalizer(n_inputs)
     
@@ -129,7 +130,7 @@ if __name__ == "__main__":
         tg_params = np.array([traj_generators[0].width, traj_generators[0].height], dtype=float)
         
         phase = np.array([traj_generators[0].phase])
-        state[4] *= 0.1
+        # state[4] *= 0.1
         print("X:", state[0], "Y:", state[1], "roll:", state[2], "pitch:", state[3], "yaw:", state[4])
         state_list.append(state)
         
@@ -148,10 +149,10 @@ if __name__ == "__main__":
 
         # print("old phase, step_time", traj_generators[0].phase, action[10])
         
-        eps_fl, theta_fl, x_fl, y_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=24, step_time=abs(action[10]))
-        eps_fr, theta_fr, x_fr, y_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=24, step_time=abs(action[10]))
-        eps_rl, theta_rl, x_rl, y_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
-        eps_rr, theta_rr, x_rr, y_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
+        eps_fl, theta_fl, x_fl, y_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]), step_theta=step, step_time=abs(action[10]))
+        eps_fr, theta_fr, x_fr, y_fr = traj_generators[1].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[4]), res_y=0.005*(action[5]), step_theta=step, step_time=abs(action[10]))
+        eps_rl, theta_rl, x_rl, y_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=step, step_time=abs(action[10]))
+        eps_rr, theta_rr, x_rr, y_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=step, step_time=abs(action[10]))
         
         # print("new phase", traj_generators[0].phase)
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
         action_list.append(action)
         
         # Remove this for the 'faster' policy
-        for i in range(24):
+        for i in range(step):
             # noise = np.random.normal(scale=0.01, size=len(actions_tg))
             # actions_tg += noise
 
