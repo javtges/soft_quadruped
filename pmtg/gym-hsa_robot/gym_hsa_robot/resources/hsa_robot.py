@@ -29,6 +29,11 @@ class HSARobot:
     def get_ids(self):
         return self.robot, self.client
     
+    def changeLateralFriction(self, link, value):
+        p.changeDynamics(self.robot, link, lateralFriction = value)
+        print(f"updated dynamics for joint {link}", p.getDynamicsInfo(self.robot, link))
+
+    
     def apply_action(self, action):
         
         """We expect our action to be eight-dimensional: 4 coordinates of leg joints,

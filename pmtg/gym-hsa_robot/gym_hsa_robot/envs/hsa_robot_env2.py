@@ -101,6 +101,9 @@ class HSARobot_Env(gym.Env):
 
         return np.array(robot_ob, dtype=np.float32)
     
+    def changeLateralFriction(self, link, value):
+        self.robot.changeLateralFriction(link, value)
+    
     def render(self, mode='rgb_array'):
         
         '''

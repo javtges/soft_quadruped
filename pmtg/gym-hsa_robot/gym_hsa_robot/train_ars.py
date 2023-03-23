@@ -331,6 +331,17 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     
     Returns the total reward over the timeframe.
     '''
+    
+    nominal_friction = 0.5
+    foot_joints = [2,4,6,8]
+    
+    
+    # This should happen once per rollout
+    for link in foot_joints:
+        value = np.random.uniform(0.4,0.6)
+        env.changeLateralFriction(link, value)
+        
+        
     state = env.reset()
     # print("state", state)  # this is an ndarray
     #print(policy.theta)
@@ -360,7 +371,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
 
-        # print("action", action)
+        print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))

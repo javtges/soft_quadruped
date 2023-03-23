@@ -19,22 +19,26 @@ robot_start_pos = [0,0,0.3]
 robot = p.loadURDF(f_name, basePosition=robot_start_pos ,physicsClientId=physicsClient)
 
 num_joints = p.getNumJoints(robot)
-for i in range(num_joints):
-    print("dyn info", p.getDynamicsInfo(robot, i))
+for i in range(-1,num_joints):
+    print(f"dyn info for robot at joint {i}", p.getDynamicsInfo(robot, i))
+    print(p.getDynamicsInfo(robot, i)[1])
+    p.changeDynamics(robot, i, lateralFriction = 0.7)
+    print(f"updated dynamics for joint {i}", p.getDynamicsInfo(robot, i))
+
     # print("joint info", p.getJointInfo(robot, i))
 
-for i in range(10000):
-    maxForce = 5
-    p.setJointMotorControl2(robot, jointIndex=2, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
-    p.setJointMotorControl2(robot, jointIndex=4, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
-    p.setJointMotorControl2(robot, jointIndex=6, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
-    p.setJointMotorControl2(robot, jointIndex=8, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
+# for i in range(10000):
+    # maxForce = 5
+    # p.setJointMotorControl2(robot, jointIndex=2, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
+    # p.setJointMotorControl2(robot, jointIndex=4, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
+    # p.setJointMotorControl2(robot, jointIndex=6, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
+    # p.setJointMotorControl2(robot, jointIndex=8, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
 
     # p.setJointMotorControl2(robot, jointIndex=1, controlMode=p.POSITION_CONTROL, targetPosition=0, force=maxForce)
     # p.setJointMotorControl2(robot, jointIndex=0, controlMode=p.POSITION_CONTROL, targetPosition=0.4, force=maxForce)
 
-    p.stepSimulation()
-    time.sleep(1/240)
+    # p.stepSimulation()
+    # time.sleep(1/240)
     # print("joint info", p.getBasePositionAndOrientation(robot))
 
     
