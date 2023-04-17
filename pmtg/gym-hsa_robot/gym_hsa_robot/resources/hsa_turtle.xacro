@@ -185,8 +185,8 @@
             <axis xyz = "0 1 0" />
             <parent link="base_link" />
             <child link="${link_child}" />
-                    <!-- What to set these to? -->
-            <limit velocity="1.0" effort="10" lower="-0.25" upper="0.25"/>
+                    <!-- Previously was +/-0.25, now we limited by 20% -->
+            <limit velocity="1.0" effort="10" lower="-0.2" upper="0.2"/>
         </joint>
 
     </xacro:macro>
@@ -198,8 +198,8 @@
             <axis xyz = "0 0 1" />
             <parent link="${link_parent}" />
             <child link="${link_child}" />
-                    <!-- What to set these to? -->
-            <limit velocity="1.0" effort="10" lower="-0.008" upper="0.001"/>
+                    <!-- Previously was [-0.008, 0.001], now we limited by 20% -->
+            <limit velocity="1.0" effort="10" lower="-0.0064" upper="0.0008"/>
         </joint>
 
     </xacro:macro>

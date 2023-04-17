@@ -110,8 +110,8 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=traj_generators)
     
-    # policy.theta = np.load('epoch_66_1.9510125950834536.npy')
-    # policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
+    # policy.theta = np.load('/home/james/final_project/epoch_106_0.3988122556425218.npy')
+    policy.theta = np.load('/home/james/final_project/src/logs/beast_trial_6x11policy_epoch_161_0.4218193610265332.npy')
     print(policy.theta)
     step = 24
     

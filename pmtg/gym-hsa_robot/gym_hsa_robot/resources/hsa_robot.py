@@ -31,7 +31,7 @@ class HSARobot:
     
     def changeLateralFriction(self, link, value):
         p.changeDynamics(self.robot, link, lateralFriction = value)
-        print(f"updated dynamics for joint {link}", p.getDynamicsInfo(self.robot, link))
+        # print(f"updated dynamics for joint {link}", p.getDynamicsInfo(self.robot, link))
 
     
     def apply_action(self, action):

@@ -50,13 +50,20 @@ import gym
 import numpy as np
 import os
 import inspect
-import gym_hsa_robot
+from gym_hsa_robot.resources.lookup_table_utils import LookupTable
+# import gym_hsa_robot
+# from resources.lookup_table_utils import LookupTable
+# print LookupTable
+
+
 
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(os.path.dirname(currentdir))
 os.sys.path.insert(0, parentdir)
 
+print(currentdir)
+# print(a)
 # Importing the libraries
 
 
@@ -331,7 +338,8 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
     
     Returns the total reward over the timeframe.
     '''
-    
+    lut = LookupTable(lookup_table_filename='/home/james/final_project/src/lookup_table_unique2.csv')
+
     nominal_friction = 0.5
     foot_joints = [2,4,6,8]
     
@@ -371,7 +379,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         state = normalizer.normalize(state)
         action = policy.evaluate(state, delta, direction, hp)
 
-        print("action", action)
+        # print("action", action)
         # Action is now 16-dimensional: [fl_w, fl_h, res_fl_x, res_fl_y, fr_w, fr_h, res_fr_x, res_fr_y, rl_w, rl_h, res_rl_x, res_rl_y, rr_w, rr_h, res_rr_x, res_rr_y]
         
         # eps_fl, theta_fl = traj_generators[0].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[2]), res_y=0.005*(action[3]))
@@ -389,6 +397,27 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         eps_rl, theta_rl, x_rl, y_rl = traj_generators[2].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[6]), res_y=0.005*(action[7]), step_theta=24, step_time=abs(action[10]))
         eps_rr, theta_rr, x_rr, y_rr = traj_generators[3].step_traj(width=0.015*(1+action[0]), height=0.003*(1+action[1]), res_x=0.023*(action[8]), res_y=0.005*(action[9]), step_theta=24, step_time=abs(action[10]))
 
+        # new change 4/23: going from xy to motor commands and then back again
+        # print("xy front left", x_fl, y_fl)
+        n1_fl, n2_fl = lut.interpolate_bilinear([x_fl], [y_fl+0.07])
+        # print("n1 n2 front left", n1_fl, n2_fl)
+        
+        n1_fr, n2_fr = lut.interpolate_bilinear([x_fr], [y_fr+0.07])
+        n1_rl, n2_rl = lut.interpolate_bilinear([x_rl], [y_rl+0.07])
+        n1_rr, n2_rr = lut.interpolate_bilinear([x_rr], [y_rr+0.07])
+        
+        # now we go back from n1 n2 to xy values
+        x_fl, y_fl = lut.interpolate_with_motors(n1_fl, n2_fl)
+        x_fr, y_fr = lut.interpolate_with_motors(n1_fr, n2_fr)
+        x_rl, y_rl = lut.interpolate_with_motors(n1_rl, n2_rl) 
+        x_rr, y_rr = lut.interpolate_with_motors(n1_rr, n2_rr)
+        
+        
+        
+        # now, go from n1 n2 back to xy and then eps, theta
+        
+        
+        
         # Due to PMTG, our action now becomes... 9 + (x_val, y_val, width, height) * 4  = 25 dimensional
 
         # Change the variable "action" so that it's 9-dimensional (the shape of the environment's input), using the TG
@@ -398,9 +427,16 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
         # Make sure that the order of legs here is correct
         actions_tg = [0, theta_fl, eps_fl, theta_fr, eps_fr, theta_rl, eps_rl, theta_rr, eps_rr]
         
+        joint_limit_abs = np.array([0, 0.2, 0.006, 0.2, 0.006, 0.2, 0.006, 0.2, 0.006])*0.1
+        noise = np.random.uniform(low=-1, high=1, size=len(actions_tg))
+        
+        noise_to_add = np.multiply(noise, joint_limit_abs)
+        # print("noise to add", noise_to_add)
+        
         # Adding noise to our actions here
-        noise = np.random.normal(scale=0.001, size=len(actions_tg))
-        actions_tg += noise
+        # new change 4/23: judiciously changing the noise applied to our actions per the joint limits. Standard deviation is ~5% of each joint limit
+        # noise = np.random.normal(scale=0.001, size=len(actions_tg))
+        actions_tg += noise_to_add
 
         # actions_tg = [0, eps_fl, theta_fl, eps_fr, theta_fr, eps_rl, theta_rl, eps_rr, theta_rr]
         # Here, generate the trajectory from the trajectory generator. Use the actions
@@ -415,7 +451,7 @@ def explore(env, normalizer, policy, direction, delta, hp, traj_generators):
             sum_rewards += reward
             num_plays += 1
         
-    print("rollout, cumulative distance in X direction: %f" %sum_rewards)
+    # print("rollout, cumulative distance in X direction: %f" %sum_rewards)
     return sum_rewards - abs(state[1]) # This should ideally prefer walking straight
 
 

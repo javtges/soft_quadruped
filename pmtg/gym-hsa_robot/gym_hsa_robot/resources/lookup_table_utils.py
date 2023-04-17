@@ -6,7 +6,6 @@ from numpy import genfromtxt
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial.transform import Slerp
 from scipy.interpolate import NearestNDInterpolator
-from gym_hsa_robot.train_ars import Ellipse_TG
 
 
 class LookupTable:
@@ -115,7 +114,7 @@ class LookupTable:
         
     def search_lut_by_motor_values(self, n1, n2):
         '''
-        Given n1, n2, find the XY values in the lookup table
+        Given n1, n2, find the XY values in the lookup table. They must be in multiples of 10
         '''
         
         if n1 < min(self.num1):
@@ -313,6 +312,9 @@ class LookupTable:
     
     
 if __name__ == '__main__':
+    
+    from gym_hsa_robot.train_ars import Ellipse_TG
+
     
     a = LookupTable(lookup_table_filename='/home/james/final_project/src/table_221107_212842__no_reset_0')
     etg = Ellipse_TG()

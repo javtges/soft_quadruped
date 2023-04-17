@@ -370,7 +370,7 @@ if __name__ == "__main__":
             params = [n1_fr[0], n2_fr[0], n1_fl[0], n2_fl[0], n1_rl[0], n2_rl[0], n1_rr[0], n2_rr[0]]
            
             params = [round(90 + (n - 90)*0.8) for n in params]
-            # params = np.clip(params, 70, 150)
+
             # print(params)
             print("transform:", transform[0][3], transform[1][3], transform[2][3])
             write_csv(filename, transform, params)
