@@ -169,6 +169,10 @@ if __name__ == "__main__":
     policy = Policy(input_size=n_inputs, output_size=n_outputs,
                     env_name="hsa_robot-v0", traj_generator=tg_arr)
     
+    # NEW POLICY!!!!
+    # /home/tommy/tommy-dev/soft_quadruped/epoch_106_0.3988122556425218.npy
+    policy.theta = np.load('/home/tommy/tommy-dev/soft_quadruped/epoch_106_0.3988122556425218.npy')
+
     #policy.theta = np.load('/home/tommy/tommy-dev/soft_quadruped/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy')
     # policy.theta = np.random.random((11,6))
     # /home/james/final_project/src/logs/beast_trial_6x11policy_epoch_15_0.331714094411355.npy
