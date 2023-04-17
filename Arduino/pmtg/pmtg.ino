@@ -16,7 +16,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
 uint8_t servonum = 0;
-// noDelay gait(300);
+noDelay gait(300);
 uint8_t count = 1;
 
 
@@ -30,7 +30,7 @@ uint8_t inverse(uint8_t num){
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(1000000);
+  Serial.begin(115200);
   Serial.setTimeout(1);
 
   pwm.begin();
@@ -75,26 +75,31 @@ void loop() {
     Serial.print("Param?");
     Serial.println(Ary[k]);
   }
-  uint16_t pulselen = map(Ary[0], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(0, 0, pulselen);
-  pulselen = map(inverse(Ary[0]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(1, 0, pulselen);
+  uint16_t pulselen = map(inverse(Ary[0]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(0, 0, pulselen);
+  pulselen = map(Ary[0], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(1, 0, pulselen);
   
-  pulselen = map(Ary[1], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(2, 0, pulselen);
-  pulselen = map(inverse(Ary[1]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(3, 0, pulselen);
+  pulselen = map(inverse(Ary[1]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(2, 0, pulselen);
+  pulselen = map(Ary[1], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(3, 0, pulselen);
   
-  pulselen = map(Ary[2], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(4, 0, pulselen);
-  pulselen = map(inverse(Ary[2]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(5, 0, pulselen);
-  pulselen = map(Ary[3], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(6, 0, pulselen);
-  pulselen = map(inverse(Ary[3]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(7, 0, pulselen);
-  pulselen = map(Ary[4], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(8, 0, pulselen);
-  pulselen = map(inverse(Ary[4]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(9, 0, pulselen);
-  pulselen = map(Ary[5], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(10, 0, pulselen);
-  pulselen = map(inverse(Ary[5]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(11, 0, pulselen);
-  pulselen = map(Ary[6], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(12, 0, pulselen);
-  pulselen = map(inverse(Ary[6]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(13, 0, pulselen);
-  pulselen = map(Ary[7], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(14, 0, pulselen);
-  pulselen = map(inverse(Ary[7]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(15, 0, pulselen);
+  pulselen = map(inverse(Ary[2]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(4, 0, pulselen);
+  pulselen = map(Ary[2], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(5, 0, pulselen);
+  
+  pulselen = map(inverse(Ary[3]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(6, 0, pulselen);
+  pulselen = map(Ary[3], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(7, 0, pulselen);
+  
+  pulselen = map(inverse(Ary[4]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(8, 0, pulselen);
+  pulselen = map(Ary[4], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(9, 0, pulselen);
+  
+  pulselen = map(inverse(Ary[5]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(10, 0, pulselen);
+  pulselen = map(Ary[5], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(11, 0, pulselen);
+  
+  pulselen = map(inverse(Ary[6]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(12, 0, pulselen);
+  pulselen = map(Ary[6], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(13, 0, pulselen);
+  
+  pulselen = map(inverse(Ary[7]), 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(14, 0, pulselen);
+  pulselen = map(Ary[7], 0, 180, SERVOMIN, SERVOMAX); pwm.setPWM(15, 0, pulselen);
 
-  
+//  delay(100);
   
 }
   
